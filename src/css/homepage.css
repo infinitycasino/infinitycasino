@@ -1,0 +1,104 @@
+/*center logo on navbar*/
+.navbar-brand {
+  margin-left: 0px;
+  position: absolute;
+  width: 50px;
+  left: 0px;
+  top: -12px;
+  padding: 10px;
+}
+
+/*navbar*/
+.navbar {
+	background-color: black;
+	opacity: 0.9;
+}
+
+/*navbar text colors*/
+.nav-text {
+	color: white;
+}
+
+/*splash screen*/
+.splash-screen {
+	background-color: #333333;
+	padding-top: 7.5em;
+	z-index: 1;
+}
+/*title texts*/
+.splash-text-title{
+	font-size: 600%;
+}
+.text-infinity{
+	color: #ABDCFF;
+}
+.text-casino{
+	color: #0397FF;
+}
+.text-bankroll{
+	color: #EA5455;
+}
+.splash-text-subtitle{
+	color: #FFFFFF;
+}
+
+/*title image*/
+@media (max-width: 1199px) {
+	.hide-medium{
+		display: none;
+	}
+}
+
+/*play games section splash screen*/
+.splash-text-play-games{
+	color: #999999;
+	text-align: center;
+}
+.center-image{
+	text-align: center;
+}
+
+/*about screen*/
+.about-screen{
+	background-color: #353535;
+	z-index: 2;
+}
+.panel-title{
+	position: relative;
+	/*font-size: +150%;*/
+	line-height: 1.3;
+	padding-bottom: 20px;
+	margin-bottom: 70px;
+	color: #fff;
+}
+.panel-title:after{
+	content: '';
+	display: block;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 79px;
+	height: 2px;
+	background-color: #0397FF;
+}
+.detail-text-title{
+	font-size: 125%;
+	color: white;
+}
+.detail-text{
+	color: white;
+}
+
+/*how do we work screen*/
+.works-screen{
+	background-color: #333333;
+	z-index: 3;
+}
+
+/*how can I contribute to the bankroll*/
+.bankroll-screen{
+	background-color: #353535;
+	z-index: 4;
+}
+
+

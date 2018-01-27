@@ -1,0 +1,85 @@
+.dice-splash-screen {
+	background-color: #333333;
+	padding-top: 1em;
+	z-index: 1;
+}
+.dice-text-title{
+	font-size: 400%;
+	color: #FFFFFF;
+}
+.stats {
+  font-size: 150%;
+  color: #FFFFFF;
+}
+.stats-text{
+  	color: #FFFFFF;
+}
+.dice-screen{
+	background-color: #000000;
+	height: 90vh;
+}
+.place-bets, .roll-bets{
+	color: white;
+	/*border: 2px #999999;
+	border-radius: 50px !important;*/
+}
+
+.roll-bets{
+	text-align: center; 
+	/*display: none; */
+}
+
+.lucky-number{
+	font-size: 777%;
+	text-align: center;
+	color: #F8D800;
+}
+
+.lucky-number:after {
+	content: '';
+	display: block;
+	margin-left: 35%;
+	/*position: absolute;*/
+	text-align: center;
+	/*bottom: 0;
+	left: 0;*/
+	width: 30%;
+	height: 5px;
+	background-color: #0397FF;
+}
+
+.your-number {
+  font-size: 777%;
+  text-align: center;
+  color: #42c2f4;
+}
+
+#roll-under-slider-handle {
+  width: 2em;
+  height: 1.6em;
+  top: 50%;
+  background-color: #42c2f4;
+  margin-top: -.8em;
+  text-align: center;
+  line-height: 1.6em;
+}
+
+#number-rolls-slider-handle {
+  width: 2.5em;
+  height: 1.6em;
+  top: 50%;
+  background-color: #42c2f4;
+  margin-top: -.8em;
+  text-align: center;
+  line-height: 1.6em;
+}
+
+#guaranteed-rolls-slider-handle {
+  width: 2.5em;
+  height: 1.6em;
+  top: 50%;
+  background-color: #42c2f4;
+  margin-top: -.8em;
+  text-align: center;
+  line-height: 1.6em;
+}

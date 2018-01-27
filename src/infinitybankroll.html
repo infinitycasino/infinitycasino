@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	    <title>Infinity Casino - Bankroll</title>
+
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+		<link rel="stylesheet" href="css/bankroll.css">
+		<link rel="stylesheet" href="css/homepage.css">
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+	</head>
+
+	<body>
+
+		<section id="navbar">
+			<nav class="navbar navbar-dark fixed-top navbar-expand-md">
+				<!-- navbar brand -->
+				<a class="navbar-brand" href="/">
+					<img src="/img/infinitycasino-logo-color-wide.png" width="240" height="60"">
+				</a>
+				<!-- navbar expand button -->
+				<div class="ml-auto">
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false">
+				    	<span class="navbar-toggler-icon"></span>
+				  	</button>
+			  	</div>
+			  	<!-- navbar links -->
+			  	<div class="collapse navbar-collapse" id="navbar-content">
+			  		
+					<ul class="navbar-nav ml-auto"> <!-- navbar-right -->
+
+						<!-- slots -->
+						<li class="nav-item">
+							<a class="nav-link" href="/moonmissionslots.html">
+								<text class="text-casino">
+									Moon Mission Slots
+								</text>
+							</a>
+						</li>
+						<!-- dice -->
+						<li class="nav-item">
+							<a class="nav-link" href="/infinitydice.html">
+								<text class="text-casino">
+									Infinity Dice
+								</text>
+							</a>
+						</li>
+						<!-- bankroll -->
+						<li class="nav-item">
+							<a class="nav-link" href="/infinitybankroll.html" class="nav-text">
+								<text class="text-bankroll">
+									Bankroll Us
+								</text>
+							</a>
+						</li>
+						<!-- support -->
+						<li class="nav-item">
+							<a class="nav-link" href="/support.html">
+								<text class="nav-text">
+									Support
+								</text>
+							</a>
+						</li>
+
+					</ul>
+			  	</div>
+			</nav>
+		</section>
+
+		<section id="splash-screen">
+
+			<div class="container-fluid splash-screen">
+				<!-- title and photo -->
+				<div class="row">
+					<div class="col-lg-8" style="padding-bottom: 12.25em">
+						<h1 class="bankroll-text-title">
+							BE THE HOUSE. GROW YOUR ETHER!
+						</h1>
+						<h3 class="bankroll-text-subtitle">Deposit ETH, cash out more ETH. It's really that simple.</h3>
+					</div>
+					<div class="col-lg-4 hide-medium" style="bottom: 3em; right: 6em;">
+						<img src="/img/bankroll-hero.png" width="775" height="466">
+					</div>
+				</div> <!-- /.row -->
+
+				<div class="row" style="padding-bottom: 10em;">
+					<div class="col-sm-12 center-image">
+						<img class="img-fluid" src='/img/bankroll-chevron.png' width="500" height="100">
+					</div>
+				</div>
+			</div> <!-- /.container-fluid -->
+
+		</section>
+
+		<section id="bankroll-info-screen">
+			<div class="container-fluid bankroll-info-screen">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-12">
+							<h2 class="panel-title">
+								Start Staking Now!
+							</h2>
+						</div>
+					</div> <!-- /.row -->
+
+					<div class="row">
+						<div class="col-lg-3 col-md-6" style="color: white; text-align: center;">
+							<img class="img-fluid" src="/img/bankroll-invest.png" width="200" height="200">
+							<br />
+							<text>Anyone may contribute ether to our bankroll at any time.</text>
+						</div>
+						<div class="col-lg-3 col-md-6" style="color: white; text-align: center;">
+							<img class="img-fluid" src="/img/bankroll-grow.png" width="200" height="200">
+							<br />
+							<text>This will give you 80% of the profits of our casino, and helps us increase the size of the bankroll, meaning larger bets for all players!</text>
+						</div>
+						<div class="col-lg-3 col-md-6" style="color: white; text-align: center;">
+							<img class="img-fluid" src="/img/bankroll-cashout.png" width="200" height="200">
+							<br />
+							Due to the constant (but small) house edge, a person that lends us their money long enough will be guaranteed profit from our bankroll!
+						</div>
+						<div class="col-lg-3 col-md-6" style="color: white; text-align: center;">
+							<img class="img-fluid" src="/img/bankroll-trustless.png" width="200" height="200">
+							<br />
+							Through our smart contract, these deposits are completely trustless. It is impossible for us to touch your ETH!
+						</div>
+					</div> <!-- /.row -->
+
+					<br />
+					<br />
+					<br />
+
+					<div class="row" style="padding-bottom: 10em;">
+						<div class="col-md-6">
+							<h3 class="panel-title">
+								Deposit
+							</h3>
+							<p style="color:white;">
+								If you would like to contribute to our bankroll, we are currently capped at <b><text id="ether-cap">?</text></b> ether. Users have currently deposited <b><text id="current-ether">?</text></b> ether to our bankroll. 
+								<br /><br/>
+								Therefore, you may contribute up to <b><text id="contributable-ether">?</text></b> ether.
+								<br/><br />
+							</p>
+								
+								<div class="alert alert-info" id="deposit-info" style="display: none;"></div>
+								<div class="input-group">
+									<input type="text" class="form-control" id="deposit-amt">
+									<span class="input-group-btn">
+										<button class="btn btn-primary" id="deposit">Deposit</button>
+									</span>
+								</div>
+							<br />
+							<p style="color:white;">
+								You may also send ether to <b>0xabce.....123585f</b> from myetherwallet, or a similar service. Please set the gas limit to 150,000 gas, so the transaction processes correctly.
+								<br /><br />
+								WARNING: DO NOT SEND ETHER FROM COINBASE, BINANCE OR ANY OTHER EXCHANGE ACCOUNT! YOU MUST PERSONALLY OWN THE PRIVATE KEY TO YOUR ACCOUNT TO WITHDRAW YOUR ETHER AT A LATER DATE!
+							</p>
+
+						</div>
+					
+						<div class="col-md-6">
+							<h3 class="panel-title">
+								Withdraw
+							</h3>
+
+							<p style="color:white;">
+								You currently have <b><text id="current-tokens">0</text></b> INFS tokens deposited with us, valued at <b><text id="current-tokens-value">0</text></b> ether.
+								<br /><br />
+								If you would like to withdraw, please type the amount of tokens you would like to withdraw.
+								<br /><br />
+								<div class="alert alert-info" id="withdraw-info" style="display: none;"></div>
+								<div class="input-group">
+									<span class="input-group-btn">
+										<button class="btn btn-default" id="all-tokens" type="button"><b>&uarr;</b></button>
+									</span>
+									<input type="text" class="form-control" id="withdraw-amt">
+									<span class="input-group-btn">
+										<button class="btn btn-danger" id="withdraw" type="button">Withdraw</button>
+									</span>
+								</div>
+							</p>
+
+						</div>
+					</div> <!-- /.row -->
+				</div> <!-- /.container -->
+			</div> <!-- /.container-fluid -->
+		</section>
+
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+		<!-- web3.js version 0.19.0 -->
+		<script src="js/web3.min.js"></script>
+		<script src="js/bignumber.min.js"></script>
+		<script src="js/infinitybankroll.js"></script>
+	</body>
+
+
+
+</html>

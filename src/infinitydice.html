@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	    <title>Infinity Casino - Infinity Dice</title>
+
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+		<link rel="stylesheet" href="css/dice.css">
+		<link rel="stylesheet" href="css/homepage.css">
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+	</head>
+
+	<body>
+
+		<section id="navbar">
+			<nav class="navbar navbar-dark fixed-top navbar-expand-md">
+				<!-- navbar brand -->
+				<a class="navbar-brand" href="/">
+					<img src="/img/infinitycasino-logo-color-wide.png" width="240" height="60"">
+				</a>
+				<!-- navbar expand button -->
+				<div class="ml-auto">
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false">
+				    	<span class="navbar-toggler-icon"></span>
+				  	</button>
+			  	</div>
+			  	<!-- navbar links -->
+			  	<div class="collapse navbar-collapse" id="navbar-content">
+			  		
+					<ul class="navbar-nav ml-auto"> <!-- navbar-right -->
+
+						<!-- slots -->
+						<li class="nav-item">
+							<a class="nav-link" href="/moonmissionslots.html">
+								<text class="text-casino">
+									Moon Mission Slots
+								</text>
+							</a>
+						</li>
+						<!-- dice -->
+						<li class="nav-item">
+							<a class="nav-link" href="/infinitydice.html">
+								<text class="text-casino">
+									Infinity Dice
+								</text>
+							</a>
+						</li>
+						<!-- bankroll -->
+						<li class="nav-item">
+							<a class="nav-link" href="/infinitybankroll.html" class="nav-text">
+								<text class="text-bankroll">
+									Bankroll Us
+								</text>
+							</a>
+						</li>
+						<!-- support -->
+						<li class="nav-item">
+							<a class="nav-link" href="/support.html">
+								<text class="nav-text">
+									Support
+								</text>
+							</a>
+						</li>
+
+					</ul>
+			  	</div>
+			</nav>
+		</section>
+
+		<section id="splash-screen">
+			<div class="container-fluid dice-splash-screen">
+				<div class="container">
+					<div class="row" style="padding-top: 3em; padding-bottom: 1em;">
+						<div class="col-sm-9">
+							<br />
+							<h1 class="dice-text-title">STUPIDLY FAST ETHEREUM DICE.</h1>
+						</div>
+						<div class="col-sm-3">
+							<text class="stats" id="amt-wagered">0</text>
+							<br />
+							<label class="stats-text">Ether Has Been Wagered</label>
+							<br />
+							<text class="stats" id="games-played"></text>
+							<br />
+							<label class="stats-text">Games Have Been Played</label>
+							<br />
+							<text class="stats" id="max-win"></text>
+							<br />
+							<label class="stats-text">Ether Can be Won Per Roll</label>
+							<br />
+							<text class="stats" id="min-bet"></text>
+							<br />
+							<label class="stats-text">Min Bet</label>
+						</div>
+					</div> <!-- /.row -->
+				</div> <!-- /.container -->
+			</div> <!-- /.container-fluid -->
+		</section>
+
+		<section id="dice">
+			<div class="container-fluid dice-screen">
+				<div class="container">
+					<div class="row justify-content-center">
+						<!-- place bets block -->
+						<div class="col-lg-5 col-md-6 col-sm-9 place-bets border border-white" id="place-bets" style="border-radius: 25px; padding: 40px;">
+							<h1>Place your bets!</h1>
+							<div class="alert alert-info" id="game-info" style="display:none;"></div>
+							<label>Number of Rolls</label>
+							<div id="number-rolls">
+								<div id="number-rolls-slider-handle" class="ui-slider-handle"></div>
+							</div>
+							<br />
+							<label>Bet per Roll</label>
+							<div class="input-group">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" id="min-bet-per-roll" type="button"><b>&darr;</b></button>
+									<button class="btn btn-primary" id="half-bet-per-roll" type="button">1/2x</button>
+								</span>
+								<input type="text" class="form-control" id="bet-per-roll" value="0.5">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" id="double-bet-per-roll" type="button">2x</button>
+									<button class="btn btn-primary" id="max-bet-per-roll" type="button"><b>&uarr;</b></button>
+								</span>
+							</div>
+							<br />
+							<label>Roll Under</label>
+							<div id="roll-under">
+								<div id="roll-under-slider-handle" class="ui-slider-handle"></div>
+							</div>
+							<br />
+							<label>Guaranteed Rolls <span id="guaranteed-rolls-tooltip"  data-toggle="tooltip" title="When buying a large amount of rolls, you only have to send enough ether so that if a few bad rolls happen, you do not go bankrupt.">???</span></label>
+							<div id="guaranteed-rolls">
+								<div id="guaranteed-rolls-slider-handle" class="ui-slider-handle"></div>
+							</div>
+							<h4 style="text-align:center;">Profit Per Roll</h4>
+							<div class="well">
+								<text class="your-stats" id="your-profit-per-roll">2.02x</text>
+							</div>
+							<button class="btn btn-danger btn-block" id="buy-rolls">Buy Rolls</button>
+						</div>
+						
+						<!-- roll block, no display initially -->
+						<div class="col-sm-9 roll-bets border border-white" id="roll-bets" style="display: none; border-radius: 25px; padding-bottom: 40px; padding-left: 40px; padding-right: 40px;  padding-top: 10px;">
+							<text style="font-size: 300%; bottom: 5em;">ROLL!</text>
+							<hr style="border-color:white;">
+							<br />
+							<h5>
+								<div class="row">
+									<div class="col-sm-4" style="text-align: left;">Bet Size: <text id="bet-size">0</text></div>
+									<div class="col-sm-4" style="text-align: center;">Total Profit: <text id="current-profit">0</text></div>
+									<div class="col-sm-4" style="text-align: right;">Max Rolls: <text id="max-rolls">0/1</text></div>
+								</div>
+							</h5>
+							<div id="lucky-number" class="lucky-number">0</div>	
+							<div id="your-number" class="your-number">0</div>
+							<br />
+							<button class="btn btn-danger btn-block" id="roll-dice"><text style="font-size: 300%">Roll!</text></button>
+						</div>
+					</div> <!-- /.row -->
+				</div> <!-- /.container -->
+			</div> <!-- /.container-fluid -->
+		</section>
+			
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+		
+		<!-- web3.js version 0.19.0 -->
+		<script src="js/web3.min.js"></script>
+		<script src="js/bignumber.min.js"></script>
+		<script src="js/infinitydice.js"></script>
+
+	</body>
+
+</html>
