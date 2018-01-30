@@ -33,6 +33,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	uint256 public ORACLIZEQUERYMAXTIME;
 	uint256 public MINBET_forORACLIZE;
 	uint256 public MINBET;
+	uint256 public ORACLIZEGASPRICE;
 	uint16 public MAXWIN_inTHOUSANDTHPERCENTS;
 
 	bool public GAMEPAUSED;
@@ -46,6 +47,8 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	function MoonMissionSlots() public {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
+		oraclize_setCustomGasPrice(10000000000);
+		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -106,6 +109,15 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		require(msg.sender == OWNER);
 
 		ORACLIZEQUERYMAXTIME = newTime;
+	}
+
+	// store the gas price as a storage variable for easy reference,
+	// and thne change the gas price using the proper oraclize function
+	function setOraclizeQueryGasPrice(uint256 gasPrice) public {
+		require(msg.sender == OWNER);
+
+		ORACLIZEGASPRICE = gasPrice;
+		oraclize_setCustomGasPrice(gasPrice);
 	}
 
 	function setGamePaused(bool paused) public {
@@ -407,43 +419,43 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			if (credits <= 28){
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 350000);
 			    // add the amount bet to the bankroll, minus the gas spent on oraclize
-				BANKROLL -= 350000 * 20000000000;
+				BANKROLL -= 350000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 56){
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 400000);
 
-			    BANKROLL -= 400000 * 20000000000;
+			    BANKROLL -= 400000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 84){
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 450000);
 
-			    BANKROLL -= 450000 * 20000000000;
+			    BANKROLL -= 450000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 112){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 500000);
 
-			    BANKROLL -= 500000 * 20000000000;
+			    BANKROLL -= 500000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 140){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 550000);
 
-			    BANKROLL -= 550000 * 20000000000;
+			    BANKROLL -= 550000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 168){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 600000);
 
-			    BANKROLL -= 600000 * 20000000000;
+			    BANKROLL -= 600000 * ORACLIZEGASPRICE;
 			}
 			else if (credits <= 196){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 650000);
 
-			    BANKROLL -= 650000 * 20000000000;
+			    BANKROLL -= 650000 * ORACLIZEGASPRICE;
 			}
 			else {
 				// credits <= 224
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 700000);
 
-			    BANKROLL -= 700000 * 20000000000;
+			    BANKROLL -= 700000 * ORACLIZEGASPRICE;
 			    
 			}
 			// add the new slots data to a mapping so that the oraclize __callback can use it later

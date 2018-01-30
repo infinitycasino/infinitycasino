@@ -39,6 +39,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	//  // of the economic disincentive (see python simulation on our github)
 	uint256 public MINBET_forORACLIZE;
 	uint256 public MINBET;
+	uint256 public ORACLIZEGASPRICE;
 	uint8 public HOUSEEDGE_inTHOUSANDTHPERCENTS; // 1 thousanthpercent == 1/1000, 
 	uint8 public MAXWIN_inTHOUSANDTHPERCENTS; // determines the maximum win a user may receive.
 
@@ -52,6 +53,9 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	function InfinityDice() public {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
+		oraclize_setCustomGasPrice(10000000000);
+
+		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -111,6 +115,15 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		require(msg.sender == OWNER);
 
 		ORACLIZEQUERYMAXTIME = newTime;
+	}
+
+	// store the gas price as a storage variable for easy reference,
+	// and thne change the gas price using the proper oraclize function
+	function setOraclizeQueryGasPrice(uint256 gasPrice) public {
+		require(msg.sender == OWNER);
+
+		ORACLIZEGASPRICE = gasPrice;
+		oraclize_setCustomGasPrice(gasPrice);
 	}
 
 	function setGamePaused(bool paused) public {
@@ -274,22 +287,22 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			if (rolls <= 256){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 375000);
 				// add the amount bet to the bankroll minus gas spent on oraclize 
-				BANKROLL -= 375000 * 20000000000;
+				BANKROLL -= 375000 * ORACLIZEGASPRICE;
 			}
 			else if (rolls <= 512){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 575000);
 
-				BANKROLL -= 575000 * 20000000000;
+				BANKROLL -= 575000 * ORACLIZEGASPRICE;
 			}
 			else if (rolls <= 768){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 775000);
 
-				BANKROLL -= 775000 * 20000000000;
+				BANKROLL -= 775000 * ORACLIZEGASPRICE;
 			}
 			else {
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 1000000);
 
-				BANKROLL -= 1000000 * 20000000000;
+				BANKROLL -= 1000000 * ORACLIZEGASPRICE;
 			}
 
 			diceData[oraclizeQueryId] = DiceGameData({
