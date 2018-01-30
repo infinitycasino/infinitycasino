@@ -52,10 +52,20 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 	function InfinityDice() public {
 		// ledger proof is ALWAYS verified on-chain
-		oraclize_setProof(proofType_Ledger);
+
+		//////////////////////////////////////////////////////////////////
+		// WARNING---THIS MUST BE ENABLED ON LIVE DEPLOYMENT!!!!!!!!!!
+		//////////////////////////////////////////////////////////////////
+		// oraclize_setProof(proofType_Ledger);
+
 		// initially set gas price to 10 Gwei, but this can be changed later to account for network congestion.
 		oraclize_setCustomGasPrice(10000000000);
 		ORACLIZEGASPRICE = 10000000000;
+
+		//////////////////////////////////////////////////////////////////
+		// WARNING---THIS MUST BE REMOVED ON DEPLOYMENT!!!!!!!!
+		//////////////////////////////////////////////////////////////////
+		OAR = OraclizeAddrResolverI(0x6f485c8bf6fc43ea212e93bbf8ce046c7f1cb475);
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -323,15 +333,28 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 	// oraclize callback.
 	// Basically do the instant bet resolution in the play(...) function above, but with the random data 
-	// that oraclize returns, instead of getting psuedo-randomness from block.blockhash 
-	function __callback(bytes32 _queryId, string _result, bytes _proof) public {
+	// that oraclize returns, instead of getting psuedo-randomness from block.blockhash
+
+	/////////////////////////////////////////////////////////////////////////////
+	// WARNING---THIS NEED TO BE REENABLED UPON DEPLOYMENT!!!!!!!!!
+	/////////////////////////////////////////////////////////////////////////////
+
+	// function __callback(bytes32 _queryId, string _result, bytes _proof) public {
+	function __callback(bytes32 _queryId, string _result) public {
 
 		DiceGameData memory data = diceData[_queryId];
 		// only need to check these, as all of the game based checks were already done in the play(...) function 
 		require(msg.sender == oraclize_cbAddress() && !data.paidOut && data.player != address(0) && LIABILITIES >= data.etherReceived);
 
 		// if the proof has failed, immediately refund the player his original bet...
-		if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
+
+		/////////////////////////////////////////////////////////////////////////////
+		// WARNING---THIS NEEDS TO BE REENABLED UPON DEPLOYMENT!!!!!!!!!!!
+		/////////////////////////////////////////////////////////////////////////////
+
+		// if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
+		if (0 != 0){
+
 			// set contract data
 			diceData[_queryId].paidOut = true;
 

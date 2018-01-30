@@ -37,7 +37,7 @@ contract InfinityBankroll is ERC20 {
 	// to the bankroll contract, and when players win, they will request the bankroll contract 
 	// to send these players their winnings.
 	// Feel free to audit these contracts on etherscan...
-	address[2] public TRUSTEDADDRESSES = [0xc7A2fb4C518350DACe3e8899a854132aa6F2112c, 0x508BAC59c401e3124e6742B3B5658bD7354b0cb7];
+	address[2] public TRUSTEDADDRESSES;
 	mapping(address => uint256) trustedAddressTargetAmount;
 
 	// mapping to log the last time a user contributed to the bankroll 
@@ -70,7 +70,7 @@ contract InfinityBankroll is ERC20 {
 	}
 
 	// initialization function 
-	function InfinityBankroll() public payable {
+	function InfinityBankroll(address dice, address slots) public payable {
 		// function is payable, owner of contract MUST "seed" contract with some ether, 
 		// so that the ratios are correct when tokens are being minted
 		require (msg.value > 0);
@@ -83,6 +83,10 @@ contract InfinityBankroll is ERC20 {
 		uint256 initialTokens = msg.value * 100;
 		balances[msg.sender] = initialTokens;
 		totalSupply += initialTokens;
+
+		// insert given game addresses into the TRUSTEDADDRESSES[] array
+		TRUSTEDADDRESSES[0] = dice;
+		TRUSTEDADDRESSES[1] = slots;
 
 		// please note that these will be the GAME ADDRESSES which will forward their balances to the bankroll, and request to pay bettors from the bankroll.
 		trustedAddressTargetAmount[TRUSTEDADDRESSES[0]] = 1 ether;
