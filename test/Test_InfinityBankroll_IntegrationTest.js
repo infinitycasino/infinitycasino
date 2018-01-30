@@ -1,6 +1,6 @@
 var InfinityBankroll = artifacts.require("InfinityBankroll");
-var Dice = artifacts.require("InfinityDice_WithBankroller_NoOraclize");
-var Slots = artifacts.require("MoonMissionSlots_WithBankroller_NoOraclize");
+var Dice = artifacts.require("InfinityDice");
+var Slots = artifacts.require("MoonMissionSlots");
 
 contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 

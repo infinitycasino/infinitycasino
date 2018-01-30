@@ -1,5 +1,5 @@
-var Dice = artifacts.require("./InfinityDice_WithBankroller_NoOraclize.sol");
-var Slots = artifacts.require("./MoonMissionSlots_WithBankroller_NoOraclize.sol");
+var Dice = artifacts.require("./InfinityDice.sol");
+var Slots = artifacts.require("./MoonMissionSlots.sol");
 var InfinityBankroll = artifacts.require("./InfinityBankroll.sol");
 
 module.exports = function(deployer, network, accounts) {
