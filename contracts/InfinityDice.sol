@@ -53,8 +53,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	function InfinityDice() public {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
+		// initially set gas price to 10 Gwei, but this can be changed later to account for network congestion.
 		oraclize_setCustomGasPrice(10000000000);
-
 		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
@@ -257,8 +257,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			}
 
 			// every roll, we will transfer 10% of the profit to the developers fund (profit per roll = house edge)
-			// that is: betPerRoll * (1%) * num rolls * (10%)
-			uint256 developersCut = betPerRoll * houseEdgeInThousandthPercents * i / 10000;
+			// that is: betPerRoll * (1%) * num rolls * (20%)
+			uint256 developersCut = betPerRoll * houseEdgeInThousandthPercents * i / 5000;
 			// add to DEVELOPERSFUND
 			DEVELOPERSFUND += developersCut;
 
@@ -393,7 +393,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			}
 
 			// data.betPerRoll
-			uint256 developersCut = data.betPerRoll * houseEdgeInThousandthPercents * i / 10000;
+			uint256 developersCut = data.betPerRoll * houseEdgeInThousandthPercents * i / 5000;
 
 			DEVELOPERSFUND += developersCut;
 

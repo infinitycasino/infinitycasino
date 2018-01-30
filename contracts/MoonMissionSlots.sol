@@ -384,8 +384,8 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			// add these new dials to the storage variable DIALSSPUN
 			DIALSSPUN = dialsSpun;
 			// calculate amount for the developers fund.
-			// this is: betPerCredit * number of credits * (5% house edge) * (10% cut)
-			uint256 developersCut = betPerCredit * credits * 5 / 1000;
+			// this is: betPerCredit * number of credits * (5% house edge) * (20% cut)
+			uint256 developersCut = betPerCredit * credits * 5 / 500;
 			// add this to the developers fund.
 			DEVELOPERSFUND += developersCut;
 
@@ -639,7 +639,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			DIALSSPUN = dialsSpun;
 
 			uint256 etherPaidout = (data.etherReceived / data.credits) * payout;
-			uint256 developersCut = data.etherReceived * 5 / 1000;
+			uint256 developersCut = data.etherReceived * 5 / 500;
 
 			DEVELOPERSFUND += developersCut;
 
