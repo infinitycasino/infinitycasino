@@ -159,7 +159,7 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 		assert((await bankroll.BANKROLL.call()).toString() === '1998999999999999999', "bankroll does not have correct balance after running assess");
 	});
 
-	it("player 1 cashing out 50 tokens should receive a little more than 1 ether because the total bankroll has gone up", async function(){
+	it("player 1 cashing out 50 tokens should receive a little more than 1 ether because the total bankroll has gone up", async () => {
 		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
 
 		var originalBalance = await web3.eth.getBalance(accounts[1]);
@@ -202,7 +202,7 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 		assert(balance.toString() === (await web3.eth.getBalance(accounts[8])).toString(), "withdrawing developers fund did not work correctly.");
 	});
 
-	it("should allow ERC20 token transfer from account[1] -> account[8]", async function(){
+	it("should allow ERC20 token transfer from account[1] -> account[8]", async () => {
 		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
 
 		var address1Tokens = await bankroll.balanceOf(accounts[1]);
@@ -213,7 +213,7 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 		assert(String(await bankroll.balanceOf(accounts[8])) === String(address1Tokens), 'address2 not given tokens');
 	});
 
-	it("should allow account[8] to approve account 1 to withdraw every ERC20 token, and then account[1] withdraws every token", async function(){
+	it("should allow account[8] to approve account[1] to withdraw every ERC20 token, and then account[1] withdraws every token", async () => {
 		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
 
 		var address8Tokens = await bankroll.balanceOf(accounts[8]);
@@ -225,5 +225,39 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 		assert(String(await bankroll.balanceOf(accounts[8])) === '0', 'address8 not drained of tokens');
 	});
 
+	it('should transfer ownership to account[8]', async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+		var dice = await Dice.at(Dice.address);
+		var slots = await Slots.at(Slots.address);
 
+		await bankroll.transferOwnership(accounts[8], {from: accounts[0], gasPrice: 0});
+		await dice.transferOwnership(accounts[8], {from: accounts[0], gasPrice: 0});
+		await slots.transferOwnership(accounts[8], {from: accounts[0], gasPrice: 0});
+
+		assert(await bankroll.OWNER.call() === accounts[8], 'ownership was not transferred of bankroll');
+		assert(await dice.OWNER.call() === accounts[8], 'ownership was not transferred of dice');
+		assert(await slots.OWNER.call() === accounts[8], 'ownership was not transferred of slots');
+	});
+
+	it("should change dice to 4 eth, and slots to 45 eth, and bankroll should remain at previous value", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+		var dice = await Dice.at(Dice.address);
+		var slots = await Slots.at(Slots.address);
+
+		await bankroll.changeTargetGameFunds(web3.toWei(4, "ether"), Dice.address, {from: accounts[8], gasPrice: 0});
+		await bankroll.assessBankrollOfAllGames({from: accounts[8], gasPrice: 0});
+
+		// now dice & slots should be at 4 ether, and bankroll should have the remaining ether.
+		assert((await dice.BANKROLL.call()).toString() === web3.toWei(4, "ether").toString(), "dice is not at 4 ether balance");
+		assert((await slots.BANKROLL.call()).toString() === web3.toWei(4, "ether").toString(), "slots is not at 4 ether balance");
+		assert((await bankroll.BANKROLL.call()).toString() === '41979020000000000000', "bankroll does not have correct balance after running assess");
+
+		await bankroll.changeTargetGameFunds(web3.toWei(45, "ether"), Slots.address, {from: accounts[8], gasPrice: 0});
+		await bankroll.assessBankrollOfAllGames({from: accounts[8], gasPrice: 0});
+
+		// now dice & slots should be at 4 ether, and bankroll should have the remaining ether.
+		assert((await dice.BANKROLL.call()).toString() === web3.toWei(4, "ether").toString(), "dice is not at 4 ether balance");
+		assert((await slots.BANKROLL.call()).toString() === web3.toWei(45, "ether").toString(), "slots is not at 45 ether balance");
+		assert((await bankroll.BANKROLL.call()).toString() === '979020000000000000', "bankroll does not have correct balance after running assess");
+	});
 })
