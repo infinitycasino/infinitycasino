@@ -335,7 +335,7 @@ contract InfinityBankroll is ERC20 {
 		return balances[_owner];
 	}
 
-	function transfer(address _to, uint256 _value) public returns (bool success){
+	function transfer(address _to, uint256 _value) public returns (bool){
 		if (balances[msg.sender] >= _value && _value > 0 && contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp){
 			// safely subtract
 			balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);

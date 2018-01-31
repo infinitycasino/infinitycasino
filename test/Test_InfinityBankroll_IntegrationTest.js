@@ -286,4 +286,65 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 
 		assert(originalBalance.plus(developersBalance).toString() === (await web3.eth.getBalance(accounts[7])).toString());
 	});
+
+	it("should allow reject user from lowering bankroll balance, but allow owner", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+
+		try {
+			await bankroll.changeMaximumInvestmentsAllowed(web3.toWei(40, "ether"), {from: accounts[0], gasPrice: 0});
+			assert(false, "bankroll failed to reject non-owner account from changing maximum investments allowed");
+		}
+		catch(error) {
+			var invalidOpMsg = "VM Exception while processing transaction: invalid opcode";
+			assert(error.message === invalidOpMsg, "bankroll failed incorrectly");
+		}
+
+		await bankroll.changeMaximumInvestmentsAllowed(web3.toWei(40, "ether"), {from: accounts[8], gasPrice: 0});
+		assert((await bankroll.MAXIMUMINVESTMENTSALLOWED.call()).toString() === web3.toWei(40, "ether").toString(), "bankroll did not change maximum investments allowed from owner call");
+	});
+
+	it("should fail when another users tries to deposit ether, and bring bankroll over the limit", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+
+		var bankrollBalance = new BigNumber(await bankroll.getCurrentBalances());
+		var maximumInvestments = new BigNumber(await bankroll.MAXIMUMINVESTMENTSALLOWED.call());
+
+		assert(bankrollBalance.gt(maximumInvestments), "bankroll balance is less than maximum investments allowed");
+
+		try {
+			await web3.eth.sendTransaction({to: InfinityBankroll.address, value: web3.toWei(1, "ether"), from: accounts[7], gasPrice: 0});
+			assert(false, "bankroll did not fail when receiving more eth than allowed.");
+		}
+		catch(error){
+			var invalidOpMsg = "VM Exception while processing transaction: invalid opcode";
+			assert(error.message === invalidOpMsg, "bankroll failed incorrectly");
+		}
+	});
+
+	it("should fail when msg.sender != owner or waittime till withdraw or transfer > 10 weeks", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+
+		try {
+			await bankroll.changeWaitTimeUntilWithdrawOrTransfer('100', {from: accounts[7], gasPrice: 0});
+			assert(false, "changeWaitTimeUntilWithdrawOrTransfer did not fail when msg.sender != owner");
+		}
+		catch(error){
+			var invalidOpMsg = "VM Exception while processing transaction: invalid opcode";
+			assert(error.message === invalidOpMsg, "bankroll failed incorrectly");
+		}
+
+		try {
+			// 10 weeks and 1 second...
+			await bankroll.changeWaitTimeUntilWithdrawOrTransfer('6048001', {from: accounts[8], gasPrice: 0});
+			assert(false, "changeWaitTimeUntilWithdrawOrTransfer did not fail when time > 10 weeks");
+		}
+		catch(error){
+			var invalidOpMsg = "VM Exception while processing transaction: invalid opcode";
+			assert(error.message === invalidOpMsg, "bankroll failed incorrectly");
+		}
+
+		// 10 weeks exactly
+		await bankroll.changeWaitTimeUntilWithdrawOrTransfer('6048000', {from: accounts[8], gasPrice: 0});
+		assert((await bankroll.WAITTIMEUNTILWITHDRAWORTRANSFER.call()).toString() === '6048000', "wait time did not get changed!")
+	});
 })
