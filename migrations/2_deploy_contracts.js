@@ -6,16 +6,16 @@ module.exports = function(deployer, network, accounts) {
 	if (network == 'development'){
 
 		deployer.then(function(){
-			return deployer.deploy(Dice, false, 0, 0, 0, {from: accounts[0]});
+			return deployer.deploy(Dice, false, 0, 0, 0, {from: accounts[0], gasPrice: 0});
 		}).then(function(){
-			return deployer.deploy(Slots, false, 0, 0, 0, {from: accounts[0]});
+			return deployer.deploy(Slots, false, 0, 0, 0, {from: accounts[0], gasPrice: 0});
 		})
 		.then(function(){
-			return deployer.deploy(InfinityBankroll, Slots.address, Dice.address, {from: accounts[0], value:web3.toWei(11, "ether")});
+			return deployer.deploy(InfinityBankroll, Slots.address, Dice.address, {from: accounts[0], value:web3.toWei(11, "ether"), gasPrice: 0});
 		}).then(function(){
-			return Dice.at(Dice.address).setBankrollerContractOnce(InfinityBankroll.address, {from: accounts[0]});
+			return Dice.at(Dice.address).setBankrollerContractOnce(InfinityBankroll.address, {from: accounts[0], gasPrice: 0});
 		}).then(function(){
-			return Slots.at(Slots.address).setBankrollerContractOnce(InfinityBankroll.address, {from: accounts[0]});
+			return Slots.at(Slots.address).setBankrollerContractOnce(InfinityBankroll.address, {from: accounts[0], gasPrice: 0});
 		});
 	}
 };

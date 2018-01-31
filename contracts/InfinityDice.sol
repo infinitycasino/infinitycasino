@@ -75,8 +75,18 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 1250 finney; // 1250 finney or 1.25 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
 		MINBET = 10 finney;
-		HOUSEEDGE_inTHOUSANDTHPERCENTS = 10; // 10/1000 == 1% house edge
-		MAXWIN_inTHOUSANDTHPERCENTS = 20; // 20/1000 == 2% of bankroll 
+		HOUSEEDGE_inTHOUSANDTHPERCENTS = 5; // 5/1000 == 0.5% house edge
+
+		//////////////////////////////////////////////////////////////////
+		// WARNING---THIS MUST BE ENABLED ON DEPLOYMENT!!!!!!!!
+		//////////////////////////////////////////////////////////////////
+		// MAXWIN_inTHOUSANDTHPERCENTS = 20; // 20/1000 == 2% of bankroll 
+
+		//////////////////////////////////////////////////////////////////
+		// WARNING---THIS MUST BE REMOVED ON DEPLOYMENT!!!!!!!!
+		//////////////////////////////////////////////////////////////////
+		MAXWIN_inTHOUSANDTHPERCENTS = 250; // 250/1000 = 25% of bankroll
+
 		OWNER = msg.sender;
 	}
 

@@ -61,6 +61,7 @@ contract InfinityBankroll is ERC20 {
 	// events
 	event FundBankroll(address contributor, uint256 etherContributed, uint256 tokensReceived);
 	event CashOut(address contributor, uint256 etherWithdrawn, uint256 tokensCashedIn);
+	event HERE(uint8 num);
 
 	// checks that an address is a "trusted address of a legitimate infinity casino game"
 	modifier addressInTrustedAddresses(address thisAddress){
@@ -89,8 +90,8 @@ contract InfinityBankroll is ERC20 {
 		TRUSTEDADDRESSES[1] = slots;
 
 		// please note that these will be the GAME ADDRESSES which will forward their balances to the bankroll, and request to pay bettors from the bankroll.
-		trustedAddressTargetAmount[TRUSTEDADDRESSES[0]] = 1 ether;
-		trustedAddressTargetAmount[TRUSTEDADDRESSES[1]] = 1 ether;
+		trustedAddressTargetAmount[TRUSTEDADDRESSES[0]] = 5 ether;
+		trustedAddressTargetAmount[TRUSTEDADDRESSES[1]] = 5 ether;
 		// CHANGE TO 6 HOURS ON LIVE DEPLOYMENT
 		WAITTIMEUNTILWITHDRAWORTRANSFER = 0 seconds;
 		MAXIMUMINVESTMENTSALLOWED = 10 ether;
@@ -184,6 +185,7 @@ contract InfinityBankroll is ERC20 {
 		require(_amountTokens <= tokenBalance 
 			&& contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
 			&& _amountTokens > 0);
+
 		// save in memory for cheap access.
 		uint256 currentContractBankroll = BANKROLL;
 		uint256 currentTotalBankroll = getCurrentBalances();
@@ -193,6 +195,7 @@ contract InfinityBankroll is ERC20 {
 		uint256 withdrawEther = _amountTokens * currentTotalBankroll / currentSupplyOfTokens;
 		// now verify that this requested amount of ether is contained in the bankroll contract...
 		require(withdrawEther <= currentContractBankroll);
+
 		// developers take 1% of withdrawls 
 		uint256 developersCut = withdrawEther / 100;
 		uint256 contributorAmount = withdrawEther - developersCut;
@@ -201,6 +204,7 @@ contract InfinityBankroll is ERC20 {
 		totalSupply = SafeMath.sub(currentSupplyOfTokens, _amountTokens);
 		// and update the users supply of tokens 
 		balances[msg.sender] = SafeMath.sub(tokenBalance, _amountTokens);
+
 		// update the bankroll based on the withdrawn amount.
 		BANKROLL = SafeMath.sub(currentContractBankroll, withdrawEther);
 		// update the developers fund based on this calculated amount 
