@@ -304,9 +304,7 @@ contract InfinityBankroll is ERC20 {
 
 		// first get developers fund from each game 
         InfinityCasinoGameInterface(TRUSTEDADDRESSES[0]).payDevelopersFund(receiver);
-
 		InfinityCasinoGameInterface(TRUSTEDADDRESSES[1]).payDevelopersFund(receiver);
-
 
 		// now send the developers fund from the main contract.
 		uint256 developersFund = DEVELOPERSFUND;

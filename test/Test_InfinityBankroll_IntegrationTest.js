@@ -273,5 +273,17 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 
 		assert((await slots.DEVELOPERSFUND.call()).toString() === developersFund.toString(), "developers fund not correct");
 		assert((await slots.BANKROLL.call()).toString() === (new BigNumber(web3.toWei(45, "ether"))).plus(contributionAmt).minus(developersFund).toString(), "bankroll not correct");
-	})
+	});
+
+	it("should send this new developers fund to accounts[7]", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+		var slots = await Slots.at(Slots.address);
+
+		var originalBalance = await web3.eth.getBalance(accounts[7]);
+		var developersBalance = await slots.DEVELOPERSFUND.call();
+
+		await bankroll.withdrawDevelopersFund(accounts[7], {from: accounts[8], gasPrice: 0});
+
+		assert(originalBalance.plus(developersBalance).toString() === (await web3.eth.getBalance(accounts[7])).toString());
+	});
 })
