@@ -260,4 +260,18 @@ contract("Test_InfinityBankroll_IntegrationTest", function(accounts){
 		assert((await slots.BANKROLL.call()).toString() === web3.toWei(45, "ether").toString(), "slots is not at 45 ether balance");
 		assert((await bankroll.BANKROLL.call()).toString() === '979020000000000000', "bankroll does not have correct balance after running assess");
 	});
+
+	it("should lose one spin of slots at 0.001 ether, and update developers cut and bankroll accordingly", async () => {
+		var bankroll = await InfinityBankroll.at(InfinityBankroll.address);
+		var slots = await Slots.at(Slots.address);
+
+		await slots.play(1, {value: web3.toWei(0.001, "ether"), from: accounts[7], gasPrice: 0});
+
+		// 0.01 ether going into slots, 5% house edge, and 20% of that to developers
+		var contributionAmt = new BigNumber(web3.toWei(0.001, "ether"));
+		var developersFund = contributionAmt.dividedBy(20).dividedBy(5);
+
+		assert((await slots.DEVELOPERSFUND.call()).toString() === developersFund.toString(), "developers fund not correct");
+		assert((await slots.BANKROLL.call()).toString() === (new BigNumber(web3.toWei(45, "ether"))).plus(contributionAmt).minus(developersFund).toString(), "bankroll not correct");
+	})
 })
