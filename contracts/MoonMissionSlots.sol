@@ -678,7 +678,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 
 			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
 			// note: without safemath this is ```BANKROLL = BANKROLL + data.etherReceived - (etherPaidout + developersCut)```
-			BANKROLL = SafeMath.sub(SafeMath.add(BANKROLL, data.etherReceived), SafeMath.add(etherPaidout, developersCut));
+			BANKROLL = SafeMath.add(SafeMath.sub(BANKROLL, SafeMath.add(etherPaidout, developersCut)), data.etherReceived);
 			
 			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherPaidout);
 
