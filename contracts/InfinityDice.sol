@@ -15,7 +15,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	// each roll will be logged as 0 -> loss, 1 -> win
 	event DiceSmallBet(uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
 	event DiceLargeBet(bytes32 indexed oraclizeQueryId, uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
-
+	event GAMEPLAYED(uint8 chosennumber, uint8 actualnumber, uint256 winnings);
 	// game data structure
 	struct DiceGameData {
 		address player;
@@ -276,8 +276,15 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				else {
 					// loser, win 1 wei as a consolation prize.
 					winnings = 1;
-					// we don't need to "place a zero" on this roll's spot in the binary strings, because they are init'ed to zero.
+					// we don't need to "place a zero" on this roll's spot in the logs, because they are init'ed to zero.
 				}
+				
+				/////////////////////////////////////////////////
+				// EVENT LOGGING HERE FOR TESTING REASONS
+				////////////////////////////////////////
+				GAMEPLAYED(rollUnder, uint8(uint256(keccak256(blockHash, gamesPlayed)) % 100) + 1, winnings);
+
+				// add the winnings, and subtract the bet per roll cost.
 				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), betPerRoll);
 				i++;
 			}
@@ -377,7 +384,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 			// set contract data
 			diceData[_queryId].paidOut = true;
-
+			// if the call fails, then subtract the original value sent from liabilites and amount wagered, and then send it back
 			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
 			AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
 			// transfer the original bet
@@ -409,8 +416,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				if (uint8(uint256(keccak256(_result, gamesPlayed)) % 100) + 1 < data.rollUnder){
 
 					// now, just get the respective fields from data.field unlike before where they were in seperate variables.
-					winnings = SafeMath.mul(SafeMath.mul(data.betPerRoll, 100), (1000 - houseEdgeInThousandthPercents)) / (data. rollUnder - 1) / 1000;
-					etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), data.betPerRoll);
+					winnings = SafeMath.mul(SafeMath.mul(data.betPerRoll, 100), (1000 - houseEdgeInThousandthPercents)) / (data.rollUnder - 1) / 1000;
 
 					// now assemble logs for the front end...
 					if (i <= 255){
@@ -430,10 +436,17 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					}
 				}
 				else {
-					// loser.
-					// subtract betPerRoll, but leave 1 wei as a consolation prize :)
-					etherAvailable = SafeMath.sub(etherAvailable, (data.betPerRoll - 1));
+					// loser. leave 1 wei as a consolation prize :)
+					winnings = 1;
+					// no need to assemble logs, because they are init-ed to zero.
 				}
+				/////////////////////////////////////////////////
+				// EVENT LOGGING HERE FOR TESTING REASONS
+				////////////////////////////////////////
+				GAMEPLAYED(data.rollUnder, uint8(uint256(keccak256(_result, gamesPlayed)) % 100) + 1, winnings);
+
+				// add the winnings, and subtract the betPerRoll cost.
+				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), data.betPerRoll);
 				i++;
 			}
 
