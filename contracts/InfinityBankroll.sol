@@ -91,7 +91,9 @@ contract InfinityBankroll is ERC20 {
 		// please note that these will be the GAME ADDRESSES which will forward their balances to the bankroll, and request to pay bettors from the bankroll.
 		trustedAddressTargetAmount[TRUSTEDADDRESSES[0]] = 1 ether;
 		trustedAddressTargetAmount[TRUSTEDADDRESSES[1]] = 1 ether;
+		////////////////////////////////////////////////
 		// CHANGE TO 6 HOURS ON LIVE DEPLOYMENT
+		////////////////////////////////////////////////
 		WAITTIMEUNTILWITHDRAWORTRANSFER = 0 seconds;
 		MAXIMUMINVESTMENTSALLOWED = 10 ether;
 	}
