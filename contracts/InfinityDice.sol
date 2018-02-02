@@ -2,8 +2,11 @@ pragma solidity ^0.4.18;
 
 import "./usingOraclize.sol";
 import "./InfinityBankroll.sol";
+import "./SafeMath.sol";
 
 contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
+
+	using SafeMath for *;
 
 	// events
 	event BuyRolls(bytes32 indexed oraclizeQueryId);
@@ -13,6 +16,10 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	event DiceSmallBet(uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
 	event DiceLargeBet(bytes32 indexed oraclizeQueryId, uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
 
+	//////////////////////////////////////////
+	// EVENT IS ONLY FOR TESTING REASONS
+	/////////////////////////////////////////
+	event GAMEPLAYED(uint8 chosennumber, uint8 actualnumber, uint256 winnings);
 	// game data structure
 	struct DiceGameData {
 		address player;
@@ -65,22 +72,24 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 1250 finney; // 1250 finney or 1.25 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
 		MINBET = 10 finney;
-		HOUSEEDGE_inTHOUSANDTHPERCENTS = 10; // 10/1000 == 1% house edge
-		MAXWIN_inTHOUSANDTHPERCENTS = 20; // 20/1000 == 2% of bankroll 
+		HOUSEEDGE_inTHOUSANDTHPERCENTS = 5; // 5/1000 == 0.5% house edge
+		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
 		OWNER = msg.sender;
 	}
 
 	function acceptEtherFromBankrollContract() payable public {
 		require(msg.sender == BANKROLLER);
 
-		BANKROLL += msg.value;
+		BANKROLL = SafeMath.add(BANKROLL, msg.value);
 	} 
 
 	function payEtherToBankrollContract(uint256 amountToSend) public {
 		require(msg.sender == BANKROLLER && amountToSend <= BANKROLL);
 
-		// decrement bankroll by amount to send, and send the amount to the bankroll contract.
-		BANKROLL -= amountToSend;
+		// decrement bankroll by amount to send
+		BANKROLL = SafeMath.sub(BANKROLL, amountToSend);
+
+		// send the amount to the bankroll contract
 		BANKROLLERINSTANCE.receiveEtherFromGameAddress.value(amountToSend)();
 	}
 
@@ -133,14 +142,14 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	}
 
 	function setHouseEdge(uint8 houseEdgeInThousandthPercents) public {
-		// house edge cannot be set > 5%
+		// house edge cannot be set > 5%, can be set to zero for promotions
 		require(msg.sender == OWNER && houseEdgeInThousandthPercents <= 50);
 
 		HOUSEEDGE_inTHOUSANDTHPERCENTS = houseEdgeInThousandthPercents;
 	}
 
 	function setMinBetForOraclize(uint256 minBet) public {
-		require(msg.sender == OWNER);
+		require(msg.sender == OWNER  && minBet > 1000);
 
 		MINBET_forORACLIZE = minBet;
 	}
@@ -179,10 +188,13 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		// set paidout == true, so users can't request more refunds, and a super delayed oraclize __callback will just get reverted
 		diceData[oraclizeQueryId].paidOut = true;
 
-		LIABILITIES -= data.etherReceived;
-		AMOUNTWAGERED -= data.etherReceived;
+		// subtract etherReceived because the bet is being refunded
+		LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+		AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
+
 		// then transfer the original bet to the player.
 		data.player.transfer(data.etherReceived);
+
 		// finally, log an event saying that the refund has processed.
 		Refund(oraclizeQueryId, data.etherReceived);
 	}
@@ -198,7 +210,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				&& rollUnder > 1
 				&& rollUnder < 100
 				// make sure that the player cannot win more than the max win (forget about house edge here)
-				&& (betPerRoll * 100) / (rollUnder - 1) <= (BANKROLL * MAXWIN_inTHOUSANDTHPERCENTS) / 1000);
+				&& (SafeMath.mul(betPerRoll, 100) / (rollUnder - 1)) <= (SafeMath.mul(BANKROLL, MAXWIN_inTHOUSANDTHPERCENTS) / 1000));
 
 		// if bets are relatively small, resolve the bet in-house
 		if (betPerRoll < MINBET_forORACLIZE) {
@@ -220,6 +232,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			uint256[] memory data = new uint256[](4);
 
 			uint16 i = 0;
+			uint256 winnings;
 			while (i < rolls && etherAvailable >= betPerRoll){
 				// add 1 to gamesPlayed, this is the nonce.
 				gamesPlayed++;
@@ -228,7 +241,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				if (uint8(uint256(keccak256(blockHash, gamesPlayed)) % 100) + 1 < rollUnder){
 					// winner!
 					// add the winnings to ether avail -> (betPerRoll * probability of hitting this number) * (house edge modifier)
-					etherAvailable += (((betPerRoll * 100) / (rollUnder - 1) * (1000 - houseEdgeInThousandthPercents)) / 1000) - betPerRoll;
+					winnings = SafeMath.mul(SafeMath.mul(betPerRoll, 100), (1000 - houseEdgeInThousandthPercents)) / (rollUnder - 1) / 1000;
+
 					// now assemble logs for the front end...
 					if (i <= 255){
 						// place a 1 in the i'th bit of data1
@@ -247,31 +261,41 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					}
 				}
 				else {
-					// loser.
-					// subtract betPerRoll, but leave 1 wei as a consolation prize :)
-					etherAvailable -= (betPerRoll - 1);
-					// we don't need to "place a zero" on this roll's spot in the binary strings, because they are init'ed to zero.
+					// loser, win 1 wei as a consolation prize :)
+					winnings = 1;
+					// we don't need to "place a zero" on this roll's spot in the logs, because they are init'ed to zero.
 				}
+				//////////////////////////////////////////////
+				// EVENT LOGGING HERE FOR TESTING REASONS
+				/////////////////////////////////////////////
+				GAMEPLAYED(rollUnder, uint8(uint256(keccak256(blockHash, gamesPlayed)) % 100) + 1, winnings);
 
+				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), betPerRoll);
 				i++;
 			}
 
 			// every roll, we will transfer 10% of the profit to the developers fund (profit per roll = house edge)
 			// that is: betPerRoll * (1%) * num rolls * (20%)
-			uint256 developersCut = betPerRoll * houseEdgeInThousandthPercents * i / 5000;
+			uint256 developersCut = SafeMath.mul(SafeMath.mul(betPerRoll, houseEdgeInThousandthPercents), i) / 5000;
+
 			// add to DEVELOPERSFUND
-			DEVELOPERSFUND += developersCut;
+			DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);
 
 			// update the bankroll with whatever happened...
-			BANKROLL -= (etherAvailable + developersCut - msg.value);
+			BANKROLL = SafeMath.add(SafeMath.sub(BANKROLL, SafeMath.add(etherAvailable, developersCut)), msg.value);
+
 			// update amount wagered with betPerRoll * i (the amount of times the roll loop was executed)
-			AMOUNTWAGERED += betPerRoll * i;
+			AMOUNTWAGERED = SafeMath.add(AMOUNTWAGERED, SafeMath.mul(betPerRoll, i));
+
 			// update amountpaidout with ether available minus original bet.
-			AMOUNTPAIDOUT += etherAvailable;
+			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherAvailable);
+
 			// update the gamesPlayer with how many games were played 
 			GAMESPLAYED = gamesPlayed;
+
 			// finally transfer the ether to the player (no reentrancy issues here...)
 			msg.sender.transfer(etherAvailable);
+
 			// log an event, with the outcome of the dice game, so that the frontend can parse it for the player.
 			DiceSmallBet(i, data[0], data[1], data[2], data[3]);
 		}
@@ -287,22 +311,22 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			if (rolls <= 256){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 375000);
 				// add the amount bet to the bankroll minus gas spent on oraclize 
-				BANKROLL -= 375000 * ORACLIZEGASPRICE;
+				BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(375000, ORACLIZEGASPRICE));
 			}
 			else if (rolls <= 512){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 575000);
 
-				BANKROLL -= 575000 * ORACLIZEGASPRICE;
+				BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(575000, ORACLIZEGASPRICE));
 			}
 			else if (rolls <= 768){
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 775000);
 
-				BANKROLL -= 775000 * ORACLIZEGASPRICE;
+				BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(775000, ORACLIZEGASPRICE));
 			}
 			else {
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 1000000);
 
-				BANKROLL -= 1000000 * ORACLIZEGASPRICE;
+				BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(1000000, ORACLIZEGASPRICE));
 			}
 
 			diceData[oraclizeQueryId] = DiceGameData({
@@ -315,8 +339,11 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				rollUnder : rollUnder
 			});
 
-			// log an event for the frontend
-			LIABILITIES += msg.value;
+			// add the sent value into liabilities... this should NOT go into the bankroll yet, and must be quarantined here to prevent
+			// timing attacks
+			LIABILITIES = SafeMath.add(LIABILITIES, msg.value);
+
+			// log an event
 			BuyRolls(oraclizeQueryId);
 		}
 	}
@@ -328,17 +355,24 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 		DiceGameData memory data = diceData[_queryId];
 		// only need to check these, as all of the game based checks were already done in the play(...) function 
-		require(msg.sender == oraclize_cbAddress() && !data.paidOut && data.player != address(0) && LIABILITIES >= data.etherReceived);
+		require(msg.sender == oraclize_cbAddress() 
+			&& !data.paidOut 
+			&& data.player != address(0) 
+			&& LIABILITIES >= data.etherReceived);
 
 		// if the proof has failed, immediately refund the player his original bet...
 		if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
+
 			// set contract data
 			diceData[_queryId].paidOut = true;
 
-			LIABILITIES -= data.etherReceived;
-			AMOUNTWAGERED -= data.etherReceived;
+			// if the call fails, then subtract the original value sent from liabilites and amount wagered, and then send it back
+			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+			AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
+
 			// transfer the original bet
 			data.player.transfer(data.etherReceived);
+
 			// log these two events
 			LedgerProofFailed(_queryId);
 			Refund(_queryId, data.etherReceived);
@@ -357,6 +391,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 			// this loop is highly similar to the one from before. Instead of fully documented, the differences will be pointed out instead.
 			uint16 i = 0;
+			uint256 winnings;
 			while (i < data.rolls && etherAvailable >= data.betPerRoll){
 				
 				gamesPlayed++;
@@ -365,9 +400,9 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 				if (uint8(uint256(keccak256(_result, gamesPlayed)) % 100) + 1 < data.rollUnder){
 
 					// now, just get the respective fields from data.field unlike before where they were in seperate variables.
-					
-					etherAvailable += (((data.betPerRoll * 100) / (data.rollUnder - 1) * (1000 - houseEdgeInThousandthPercents)) / 1000) - data.betPerRoll;
-					// now assemble logs for the front end...
+					winnings = SafeMath.mul(SafeMath.mul(data.betPerRoll, 100), (1000 - houseEdgeInThousandthPercents)) / (data.rollUnder - 1) / 1000;
+
+					// assemble logs...
 					if (i <= 255){
 						// place a 1 in the i'th bit of data1
 						logsData[0] += uint256(2) ** (255 - i);
@@ -385,25 +420,36 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					}
 				}
 				else {
-					// loser.
-					// subtract betPerRoll, but leave 1 wei as a consolation prize :)
-					etherAvailable -= (data.betPerRoll - 1);
+					//  leave 1 wei as a consolation prize :)
+					winnings = 1;
 				}
+				/////////////////////////////////////////////
+				// EVENT LOGGING HERE FOR TESTING REASONS
+				////////////////////////////////////////////
+				GAMEPLAYED(data.rollUnder, uint8(uint256(keccak256(_result, gamesPlayed)) % 100) + 1, winnings);
+
+				// add the winnings, and subtract the betPerRoll cost.
+				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), data.betPerRoll);
+
 				i++;
 			}
 
 			// data.betPerRoll
-			uint256 developersCut = data.betPerRoll * houseEdgeInThousandthPercents * i / 5000;
+			uint256 developersCut = SafeMath.mul(SafeMath.mul(data.betPerRoll, houseEdgeInThousandthPercents), i) / 5000;
 
-			DEVELOPERSFUND += developersCut;
+			// add the devs cut to the developers fund.
+			DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);
 
-			// etherReceived was already added to BANKROLL in the play(...) function, so just sub etherAvailable.
-			BANKROLL += data.etherReceived - (etherAvailable + developersCut);
-			LIABILITIES -= data.etherReceived;
+			// subtract etherReceived from liabilities because this bet has resolved.
+			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+
+			// now add the ether received to bankroll, and subtract the amount being paid out and the developers fee.
+			BANKROLL = SafeMath.sub(SafeMath.add(BANKROLL, data.etherReceived), SafeMath.add(etherAvailable, developersCut));
+
 			// now, get betPerRoll from data
-			AMOUNTWAGERED += data.betPerRoll * i;
+			AMOUNTWAGERED = SafeMath.add(AMOUNTWAGERED, SafeMath.mul(data.betPerRoll, i));
 
-			AMOUNTPAIDOUT += etherAvailable;
+			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherAvailable);
 			
 			GAMESPLAYED = gamesPlayed;
 
