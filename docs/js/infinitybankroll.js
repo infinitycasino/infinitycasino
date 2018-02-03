@@ -181,7 +181,7 @@ InfinityBankroll = {
             // update the UI with this info
             $('#current-ether').text(web3.fromWei(InfinityBankroll.currentTotalBankrollBalance, "ether"));
             $('#contributable-ether').text(web3.fromWei(youCanContribute, "ether"));
-            $('#ether-cap').text(web3.fromWei(youCanContribute, "ether"));
+            $('#ether-cap').text(web3.fromWei(InfinityBankroll.maximumBankrollContributions, "ether"));
 
             $('#deposit-info').show();
             $('#deposit-info').html("MAX: " + web3.fromWei(youCanContribute, "ether") + " ether.");
