@@ -576,7 +576,7 @@ function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
 
 function checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll){
     // check if the game has to end due to bankrupt player, or roll limit reached
-    if (onRoll >= totalRolls || currentProfit < betPerRoll){
+    if (onRoll >= totalRolls || currentProfit.lessThan(betPerRoll)){
 
         $('#roll-dice').addClass('disabled');
         // TODO: animations needed
