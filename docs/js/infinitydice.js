@@ -223,9 +223,9 @@ InfinityDice = {
                 }
                 // if there is a single log, then the transaction was resolved internally.
                 // now we just need to parse the game data and play some dice!
-                else if (txReceipt.logs.length === 1){
+                else if (txReceipt.logs.length != 2){
 
-                    var data = txReceipt.logs[0]['data'];
+                    var data = txReceipt.logs[txReceipt.logs.length - 1]['data'];
 
                     console.log('all data', data);
 
@@ -286,6 +286,7 @@ InfinityDice = {
 
         // get the amount of rolls that actually happened from the logs
         var rolls = parseInt(data.slice(2, 66), 16);
+        console.log('rolls', rolls);
 
         // get the roll data (in a hex string, convert to binary)..
         // then we need to slice this string again, because after the rolls are done, it will all be 00000000
@@ -576,7 +577,7 @@ function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
 
 function checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll){
     // check if the game has to end due to bankrupt player, or roll limit reached
-    if (onRoll >= totalRolls || currentProfit < betPerRoll){
+    if (onRoll >= totalRolls || currentProfit.lessThan(betPerRoll)){
 
         $('#roll-dice').addClass('disabled');
         // TODO: animations needed
