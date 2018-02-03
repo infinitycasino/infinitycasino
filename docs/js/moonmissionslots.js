@@ -114,7 +114,7 @@ MoonMissionSlots = {
             var slotsAbi = data;
 
             MoonMissionSlots.Slots = web3.eth.contract(slotsAbi);
-            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x508bac59c401e3124e6742b3b5658bd7354b0cb7');
+            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x0ba5a58b03cf9569cbf6379fb8520ee143584cf9');
 
             return MoonMissionSlots.getContractDetails(web3);
 

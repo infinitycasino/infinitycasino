@@ -89,7 +89,7 @@ InfinityDice = {
             var diceAbi = data;
             
             InfinityDice.Dice = web3.eth.contract(diceAbi);
-            InfinityDice.diceInstance = InfinityDice.Dice.at('0xc7a2fb4c518350dace3e8899a854132aa6f2112c');
+            InfinityDice.diceInstance = InfinityDice.Dice.at('0xcc864957f9d40527426c3e83f8c187d3d0b78cb8');
 
             return InfinityDice.getContractDetails(web3);
 
