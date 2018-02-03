@@ -1,0 +1,85 @@
+.jumbotron {
+  top: -20px;
+  position: relative;
+}
+
+.splash-jumbotron {
+  text-align: center;
+  background-image: url(/img/bankroll-photo.png);
+  background-repeat: repeat;
+  background-size: 300px 100px;
+  padding-top: 7em;
+  padding-bottom: 7em;
+}
+
+.bankroll-jumbotron {
+  text-align: center;
+}
+
+.dice-jumbotron {
+  padding-top: 4em;
+  padding-bottom: 4em;
+}
+
+.slots-jumbotron {
+  padding-top: 4em;
+  padding-bottom: 4em;
+}
+
+.support-jumbotron {
+}
+
+
+
+.games-splash {
+  font-size: 400%;
+  color: #353535;
+  font-family: 'Raleway', sans-serif;
+}
+
+.glyphicon {
+  /*for weird issue with glyphicon button alignment*/
+  top: -0px;
+}
+
+.stats {
+  font-size: 150%;
+  text-align: center;
+}
+
+.main-body-div{
+  background-image: url(/img/dice-photo.png);
+  background-repeat: repeat;
+  background-size: 100px 100px;
+}
+
+.title-text {
+  font-size: 250%;
+  letter-spacing: 2.5px;
+  color: #353535;
+  font-family: 'Raleway', sans-serif;
+}
+
+.subtitle-text {
+  text-align: center;
+  font-size: 200%;
+  letter-spacing: 5px;
+  color: #353535;
+  font-family: 'Raleway', sans-serif;
+}
+
+.info-text {
+  font-size: 100%;
+  text-align: center;
+  color: #353535;
+  font-family: 'Raleway', sans-serif;
+}
+
+
+
+
+
+
+
+
+

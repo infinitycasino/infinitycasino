@@ -1,0 +1,25 @@
+{
+  "name": "infinitycasinov1_final",
+  "version": "1.0.0",
+  "description": "Infinity Casino initial deployment",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://infinitycasino@bitbucket.org/infinitycasino/infinitycasino_deployment1.git"
+  },
+  "keywords": [
+    "casino",
+    "ethereum",
+    "smart-contracts"
+  ],
+  "author": "A@INFINITYCASINO.IO",
+  "license": "SEE LICENSE IN README.txt",
+  "homepage": "https://bitbucket.org/infinitycasino/infinitycasino_deployment1#readme"
+}
