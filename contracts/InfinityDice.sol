@@ -149,13 +149,13 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	}
 
 	function setMinBetForOraclize(uint256 minBet) public {
-		require(msg.sender == OWNER  && minBet > 1000);
+		require(msg.sender == OWNER);
 
 		MINBET_forORACLIZE = minBet;
 	}
 
 	function setMinBet(uint256 minBet) public {
-		require(msg.sender == OWNER);
+		require(msg.sender == OWNER && minBet > 1000);
 
 		MINBET = minBet;
 	}
@@ -360,11 +360,13 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			&& data.player != address(0) 
 			&& LIABILITIES >= data.etherReceived);
 
+		// immediately set the game paid out to true
+		// prevent players from requesting refunds after their games go through, 
+		// and prevent errant oraclize double-calls
+		diceData[_queryId].paidOut = true;
+
 		// if the proof has failed, immediately refund the player his original bet...
 		if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
-
-			// set contract data
-			diceData[_queryId].paidOut = true;
 
 			// if the call fails, then subtract the original value sent from liabilites and amount wagered, and then send it back
 			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
@@ -452,10 +454,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherAvailable);
 			
 			GAMESPLAYED = gamesPlayed;
-
-			// IMPORTANT! since we have inited this gameData structure, we need to signal that we have finished using it to prevent reentrancy
-			// set paidOut = true;
-			diceData[_queryId].paidOut = true;
 
 			// now get player from data, not msg.sender
 			data.player.transfer(etherAvailable);
