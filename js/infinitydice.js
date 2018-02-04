@@ -198,10 +198,8 @@ InfinityDice = {
         InfinityDice.betPerRoll = new BigNumber(web3.toWei($('#bet-per-roll').val(), "ether"));
         // total amt to send
         InfinityDice.totalBet = new BigNumber(InfinityDice.betPerRoll.times(guaranteedRollsValue()).toFixed(0));
-
-        console.log('bet/roll', typeof InfinityDice.betPerRoll, 'total rolls', typeof InfinityDice.totalRolls, 'roll under', typeof InfinityDice.rollUnder, 'total bet', typeof InfinityDice.totalBet);
-        console.log('bet/roll', InfinityDice.betPerRoll, 'total rolls', InfinityDice.totalRolls, 'roll under', InfinityDice.rollUnder, 'total bet', InfinityDice.totalBet);
-        InfinityDice.onRoll = 1;
+        // no rolls yet
+        InfinityDice.onRoll = 0;
 
         player = InfinityDice.getPlayerDetails(web3);
         
@@ -291,6 +289,7 @@ InfinityDice = {
         // get the roll data (in a hex string, convert to binary)..
         // then we need to slice this string again, because after the rolls are done, it will all be 00000000
         InfinityDice.rollData = hexToBinary(data.slice(66, 322)).slice(0, rolls);
+        console.log(InfinityDice.rollData)
     },
 
     rollDice: async function(){
