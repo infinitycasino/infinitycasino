@@ -324,6 +324,9 @@ MoonMissionSlots = {
 
     spinWheel: function() {
 
+        // disable the spin button while the wheel is spinning
+        $('#spin-wheel').addClass('disabled');
+
         MoonMissionSlots.dial1Type = parseInt(MoonMissionSlots.spinData[0], 10);
         MoonMissionSlots.dial2Type = parseInt(MoonMissionSlots.spinData[1], 10);
         MoonMissionSlots.dial3Type = parseInt(MoonMissionSlots.spinData[2], 10);
@@ -368,6 +371,8 @@ MoonMissionSlots = {
             else if (currentLocation === dialLocation && dialId === '#dial-3'){
                 // if the third dial is done spinning (means they all are done spinning), animate the payment
                 MoonMissionSlots.animatePayment();
+                // re-enable the spin button
+                $('#spin-wheel').removeClass('disabled');
                 console.log('done with dial 3');
             }
             else {
