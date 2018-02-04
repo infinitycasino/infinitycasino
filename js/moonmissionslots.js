@@ -326,6 +326,7 @@ MoonMissionSlots = {
 
         // disable the spin button while the wheel is spinning
         $('#spin-wheel').addClass('disabled');
+        $('#spin-wheel').off('click');
 
         MoonMissionSlots.dial1Type = parseInt(MoonMissionSlots.spinData[0], 10);
         MoonMissionSlots.dial2Type = parseInt(MoonMissionSlots.spinData[1], 10);
@@ -373,6 +374,8 @@ MoonMissionSlots = {
                 MoonMissionSlots.animatePayment();
                 // re-enable the spin button
                 $('#spin-wheel').removeClass('disabled');
+                $('#spin-wheel').click(function(){ MoonMissionSlots.spinWheel(); });
+                
                 console.log('done with dial 3');
             }
             else {

@@ -293,6 +293,7 @@ InfinityDice = {
     },
 
     rollDice: async function(){
+
         var win = InfinityDice.rollData.charAt(InfinityDice.onRoll) === '1';
 
         var houseEdgeMult = ((100 - InfinityDice.houseEdge) / 100).toString();
@@ -307,13 +308,12 @@ InfinityDice = {
         await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
 
         InfinityDice.onRoll += 1;
-
     },
 
     calculateMaxBet: function(rollUnder){
         // stay on the safe side so rolls don't fail...
-        var profitMult = (100 / (InfinityDice.rollUnder - 1)).toString();
-        var maxBet = InfinityDice.maxWinPerSpin.times(profitMult).times(0.95);
+        var profitMult = (100 / (rollUnderValue() - 1)).toString();
+        var maxBet = InfinityDice.maxWinPerSpin.dividedBy(profitMult).times(0.95);
         
         return web3.fromWei(maxBet, "ether");
     },
@@ -363,7 +363,9 @@ function initUI(){
 
     $('#double-bet-per-roll').click(function(){
         var maxBet = InfinityDice.calculateMaxBet( parseFloat(rollUnderValue()) );
+        console.log(maxBet.toString());
         var doubleBet = parseFloat($('#bet-per-roll').val()) * 2;
+        console.log(doubleBet.toString());
 
         if (maxBet < doubleBet){
             $('#bet-per-roll').val(maxBet);
@@ -509,6 +511,10 @@ function rollsReady(betPerRoll, totalProfit, maxRolls, rollUnder){
 }
 
 async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRoll, currentProfit){
+    // disable the ROLL button
+    $('#roll-dice').addClass('disabled');
+    $('#roll-dice').off('click');
+
     // break if the rolls are done
     var thisRoll;
 
@@ -548,6 +554,11 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
                 }, 500);
                 
             }
+            // enable the ROLL button once the roll has resolved.
+            $('#roll-dice').removeClass('disabled');
+            $('#roll-dice').click(function() {InfinityDice.rollDice(); });;
+
+            // now check the game status to verify that the rolls have completed or not
             checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll);
         }
     }
