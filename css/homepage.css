@@ -21,14 +21,15 @@
 
 /*splash screen*/
 .splash-screen {
-	background-color: #333333;
+	background-color: #111111;
 	padding-top: 7.5em;
-	z-index: 1;
+	min-height: 70vh;
+}
+.play-games {
+	background-color: #161616;
+
 }
 /*title texts*/
-.splash-text-title{
-	font-size: 600%;
-}
 .text-infinity{
 	color: #ABDCFF;
 }
@@ -41,12 +42,11 @@
 .splash-text-subtitle{
 	color: #FFFFFF;
 }
-
-/*title image*/
-@media (max-width: 1199px) {
-	.hide-medium{
-		display: none;
-	}
+.social-icon{
+	opacity: 0.5;
+}
+.social-icon:hover{
+	opacity: 1;
 }
 
 /*play games section splash screen*/
@@ -60,8 +60,7 @@
 
 /*about screen*/
 .about-screen{
-	background-color: #353535;
-	z-index: 2;
+	background-color: #191919;
 }
 .panel-title{
 	position: relative;
@@ -91,14 +90,7 @@
 
 /*how do we work screen*/
 .works-screen{
-	background-color: #333333;
-	z-index: 3;
-}
-
-/*how can I contribute to the bankroll*/
-.bankroll-screen{
-	background-color: #353535;
-	z-index: 4;
+	background-color: #111111;
 }
 
 

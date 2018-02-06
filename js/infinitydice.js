@@ -89,7 +89,7 @@ InfinityDice = {
             var diceAbi = data;
             
             InfinityDice.Dice = web3.eth.contract(diceAbi);
-            InfinityDice.diceInstance = InfinityDice.Dice.at('0xcc864957f9d40527426c3e83f8c187d3d0b78cb8');
+            InfinityDice.diceInstance = InfinityDice.Dice.at('0xc7a2fb4c518350dace3e8899a854132aa6f2112c');
 
             return InfinityDice.getContractDetails(web3);
 
@@ -198,7 +198,7 @@ InfinityDice = {
         InfinityDice.betPerRoll = new BigNumber(web3.toWei($('#bet-per-roll').val(), "ether"));
         // total amt to send
         InfinityDice.totalBet = new BigNumber(InfinityDice.betPerRoll.times(guaranteedRollsValue()).toFixed(0));
-        // no rolls yet
+
         InfinityDice.onRoll = 0;
 
         player = InfinityDice.getPlayerDetails(web3);
@@ -221,9 +221,9 @@ InfinityDice = {
                 }
                 // if there is a single log, then the transaction was resolved internally.
                 // now we just need to parse the game data and play some dice!
-                else if (txReceipt.logs.length != 2){
+                else if (txReceipt.logs.length === 1){
 
-                    var data = txReceipt.logs[txReceipt.logs.length - 1]['data'];
+                    var data = txReceipt.logs[0]['data'];
 
                     console.log('all data', data);
 
@@ -284,16 +284,13 @@ InfinityDice = {
 
         // get the amount of rolls that actually happened from the logs
         var rolls = parseInt(data.slice(2, 66), 16);
-        console.log('rolls', rolls);
 
         // get the roll data (in a hex string, convert to binary)..
         // then we need to slice this string again, because after the rolls are done, it will all be 00000000
         InfinityDice.rollData = hexToBinary(data.slice(66, 322)).slice(0, rolls);
-        console.log(InfinityDice.rollData)
     },
 
     rollDice: async function(){
-
         var win = InfinityDice.rollData.charAt(InfinityDice.onRoll) === '1';
 
         var houseEdgeMult = ((100 - InfinityDice.houseEdge) / 100).toString();
@@ -308,6 +305,7 @@ InfinityDice = {
         await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
 
         InfinityDice.onRoll += 1;
+
     },
 
     calculateMaxBet: function(rollUnder){
@@ -363,9 +361,7 @@ function initUI(){
 
     $('#double-bet-per-roll').click(function(){
         var maxBet = InfinityDice.calculateMaxBet( parseFloat(rollUnderValue()) );
-        console.log(maxBet.toString());
         var doubleBet = parseFloat($('#bet-per-roll').val()) * 2;
-        console.log(doubleBet.toString());
 
         if (maxBet < doubleBet){
             $('#bet-per-roll').val(maxBet);
@@ -515,8 +511,12 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
     $('#roll-dice').addClass('disabled');
     $('#roll-dice').off('click');
 
-    // break if the rolls are done
     var thisRoll;
+
+    // break if the rolls are completed.
+    if (onRoll >= totalRolls){
+        return;
+    }
 
     // do a simple animation
     var interval = 10;
@@ -541,9 +541,8 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
                 setTimeout( () => {
                     updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'red'});
                 }, 500);
-               
-
             }
+
             else {
                 thisRoll = Math.floor(Math.random() * (rollUnder - 1) + 1);
                 
@@ -551,14 +550,11 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
 
                 setTimeout( () => {
                     updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'green'});
-                }, 500);
-                
+                }, 500); 
             }
-            // enable the ROLL button once the roll has resolved.
-            $('#roll-dice').removeClass('disabled');
-            $('#roll-dice').click(function() {InfinityDice.rollDice(); });;
-
-            // now check the game status to verify that the rolls have completed or not
+             // enable the ROLL button once the roll has resolved.
+             $('#roll-dice').removeClass('disabled');
+             $('#roll-dice').click( () => {InfinityDice.rollDice()} );
             checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll);
         }
     }
