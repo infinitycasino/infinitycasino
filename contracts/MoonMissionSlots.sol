@@ -14,10 +14,6 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	event Refund(bytes32 indexed oraclizeQueryId, uint256 amount);
 	event SlotsLargeBet(bytes32 indexed oraclizeQueryId, uint256 data1, uint256 data2, uint256 data3, uint256 data4, uint256 data5, uint256 data6, uint256 data7, uint256 data8);
 	event SlotsSmallBet(uint256 data1, uint256 data2, uint256 data3, uint256 data4, uint256 data5, uint256 data6, uint256 data7, uint256 data8);
-	///////////////////////////////////
-	// THIS EVENT IS JUST FOR TESTING, REMOVE ON DEPLOY!
-	///////////////////////////////////
-	event GAMEPLAYED(uint8 dial1, uint8 dial2, uint8 dial3, uint256 payout);
 
 	// slots game structure
 	struct SlotsGameData {
@@ -389,10 +385,6 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 					data[7] += uint256(dial2) * uint256(2) ** (3 * ((3 * (223 - i)) + 1));
 					data[7] += uint256(dial3) * uint256(2) ** (3 * ((3 * (223 - i))));
 				}
-				/////////////////////////////////////////////
-				// EVENT LOGGING HERE FOR TESTING REASONS
-				////////////////////////////////////////////
-				GAMEPLAYED(dial1, dial2, dial3, payout);
 			}
 
 			// add these new dials to the storage variable DIALSSPUN
@@ -660,10 +652,6 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 					logsData[7] += uint256(dial2) * uint256(2) ** (3 * ((3 * (223 - i)) + 1));
 					logsData[7] += uint256(dial3) * uint256(2) ** (3 * ((3 * (223 - i))));
 				}
-				/////////////////////////////////////////////
-				// EVENT LOGGING HERE FOR TESTING REASONS
-				////////////////////////////////////////////
-				GAMEPLAYED(dial1, dial2, dial3, payout);
 			}
 
 			DIALSSPUN = dialsSpun;

@@ -90,7 +90,7 @@ InfinityBankroll = {
             var bankrollAbi = data;
             // rinkeby: 0x6ce0f38DB787434f2ED0C7DE8C61be2FAAe87f32
             InfinityBankroll.Bankroll = web3.eth.contract(bankrollAbi);
-            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0x305835a554eec10684d3c97d09424eb70ac060f4');
+            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0xB3E74ceE8879d0E8eB421eCC39fDb428b4Ab8910');
 
             return InfinityBankroll.getUserDetails(web3);
 

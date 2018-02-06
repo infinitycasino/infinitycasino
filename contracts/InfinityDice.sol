@@ -16,10 +16,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	event DiceSmallBet(uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
 	event DiceLargeBet(bytes32 indexed oraclizeQueryId, uint16 actualRolls, uint256 data1, uint256 data2, uint256 data3, uint256 data4);
 
-	//////////////////////////////////////////
-	// EVENT IS ONLY FOR TESTING REASONS
-	/////////////////////////////////////////
-	event GAMEPLAYED(uint8 chosennumber, uint8 actualnumber, uint256 winnings);
 	// game data structure
 	struct DiceGameData {
 		address player;
@@ -61,8 +57,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
 		// initially set gas price to 10 Gwei, but this can be changed later to account for network congestion.
-		oraclize_setCustomGasPrice(10000000000);
-		ORACLIZEGASPRICE = 10000000000;
+		oraclize_setCustomGasPrice(20000000000);
+		ORACLIZEGASPRICE = 20000000000;
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -265,10 +261,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					winnings = 1;
 					// we don't need to "place a zero" on this roll's spot in the logs, because they are init'ed to zero.
 				}
-				//////////////////////////////////////////////
-				// EVENT LOGGING HERE FOR TESTING REASONS
-				/////////////////////////////////////////////
-				GAMEPLAYED(rollUnder, uint8(uint256(keccak256(blockHash, gamesPlayed)) % 100) + 1, winnings);
 
 				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), betPerRoll);
 				i++;
@@ -425,14 +417,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					//  leave 1 wei as a consolation prize :)
 					winnings = 1;
 				}
-				/////////////////////////////////////////////
-				// EVENT LOGGING HERE FOR TESTING REASONS
-				////////////////////////////////////////////
-				GAMEPLAYED(data.rollUnder, uint8(uint256(keccak256(_result, gamesPlayed)) % 100) + 1, winnings);
-
 				// add the winnings, and subtract the betPerRoll cost.
 				etherAvailable = SafeMath.sub(SafeMath.add(etherAvailable, winnings), data.betPerRoll);
-
 				i++;
 			}
 
