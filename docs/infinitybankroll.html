@@ -4,6 +4,8 @@
 		<meta charset="utf-8">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+	    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
 	    <title>Infinity Casino - Bankroll</title>
 
 	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
@@ -64,7 +66,6 @@
 								</text>
 							</a>
 						</li>
-
 					</ul>
 			  	</div>
 			</nav>
@@ -73,32 +74,36 @@
 		<section id="splash-screen">
 
 			<div class="container-fluid splash-screen">
-				<!-- title and photo -->
-				<div class="row">
-					<div class="col-lg-8" style="padding-bottom: 12.25em">
-						<h1 class="bankroll-text-title">
-							BE THE HOUSE. GROW YOUR ETHER!
-						</h1>
-						<h3 class="bankroll-text-subtitle">Deposit ETH, cash out more ETH. It's really that simple.</h3>
+				<div class="container">
+					<!-- title and photo -->
+					<div class="row">
+						<div class="col-lg-8">
+							<h1 class="bankroll-text-title">
+								BE THE HOUSE. GET DIVIDENDS IN ETHER.
+							</h1>
+							<h3 class="bankroll-text-subtitle">Deposit ETH, cash out more ETH. It's really that simple.</h3>
+						</div>
+					</div> <!-- /.row -->
+					<div class="row">
+						<div class="col-lg-8 col-md-10">
+							<br />
+							<br />
+							<br />
+							<text style="color: white;">Seem a little too good to be true? It's not! Please read our technical whitepaper for more infomation.</text>
+							<br />
+							<a href="infinitycasino-whitepaper.pdf" class="btn btn-primary">Read Whitepaper</a>
+							<br />
+						</div>
 					</div>
-					<div class="col-lg-4 hide-medium" style="bottom: 3em; right: 6em;">
-						<img src="/img/bankroll-hero.png" width="775" height="466">
-					</div>
-				</div> <!-- /.row -->
-
-				<div class="row" style="padding-bottom: 10em;">
-					<div class="col-sm-12 center-image">
-						<img class="img-fluid" src='/img/bankroll-chevron.png' width="500" height="100">
-					</div>
-				</div>
+				</div> <!-- /.container -->
 			</div> <!-- /.container-fluid -->
 
 		</section>
 
 		<section id="bankroll-info-screen">
-			<div class="container-fluid bankroll-info-screen">
+			<div class="container-fluid about-screen">
 				<div class="container">
-					<div class="row">
+					<div class="row" style="padding-top: 1em;">
 						<div class="col-xs-12">
 							<h2 class="panel-title">
 								Start Staking Now!
@@ -106,7 +111,7 @@
 						</div>
 					</div> <!-- /.row -->
 
-					<div class="row">
+					<div class="row" style="padding-bottom: 1em;">
 						<div class="col-lg-3 col-md-6" style="color: white; text-align: center;">
 							<img class="img-fluid" src="/img/bankroll-invest.png" width="200" height="200">
 							<br />
@@ -128,12 +133,13 @@
 							Through our smart contract, these deposits are completely trustless. It is impossible for us to touch your ETH!
 						</div>
 					</div> <!-- /.row -->
-
-					<br />
-					<br />
-					<br />
-
-					<div class="row" style="padding-bottom: 10em;">
+				</div> <!-- /.container -->
+			</div> <!-- /.container-fluid -->
+		</section>
+		<section id="bankroll-actions-screen">
+			<div class="container-fluid bankroll-actions-screen">
+				<div class="container">
+					<div class="row" style="padding-bottom: 1em; padding-top: 1em;">
 						<div class="col-md-6">
 							<h3 class="panel-title">
 								Deposit
@@ -167,7 +173,7 @@
 							</h3>
 
 							<p style="color:white;">
-								You currently have <b><text id="current-tokens">0</text></b> INFS tokens deposited with us, valued at <b><text id="current-tokens-value">0</text></b> ether.
+								You currently have <b><text id="current-tokens">?</text></b> INFS tokens deposited with us, valued at <b><text id="current-tokens-value">?</text></b> ether.
 								<br /><br />
 								If you would like to withdraw, please type the amount of tokens you would like to withdraw.
 								<br /><br />
@@ -182,7 +188,9 @@
 									</span>
 								</div>
 							</p>
-
+							<div style="text-align: right;">
+								<img src="/img/bankroll-moneyman.png" width="250" height="300">
+							</div>
 						</div>
 					</div> <!-- /.row -->
 				</div> <!-- /.container -->
