@@ -338,30 +338,24 @@ MoonMissionSlots = {
         var dial2Location = String(MoonMissionSlots.dial2Layout[MoonMissionSlots.dial2Type][Math.floor(Math.random() * MoonMissionSlots.dial2Layout[MoonMissionSlots.dial2Type].length)]);
         var dial3Location = String(MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type][Math.floor(Math.random() * MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type].length)]);
 
-        console.log('dial 1 type', MoonMissionSlots.dial1Type);
-        console.log('dial 2 type', MoonMissionSlots.dial2Type);
-        console.log('dial 3 type', MoonMissionSlots.dial3Type);
-
-        console.log('You got ' +  dial1Location + ' -- ' + dial2Location + ' -- ' + dial3Location);
-
-        // spin through all combinations in dial-1 2x, dial-2 2.5x, and dial-3 3x
+        // spin through all combinations, and then blindly search for the previously determined dial position
 
         MoonMissionSlots.animateWheel('#dial-1', 0, dial1Location);
 
         setTimeout(function(){
             MoonMissionSlots.animateWheel('#dial-2', 0, dial2Location);
-        }, 150);
+        }, 400);
 
         setTimeout(function(){
             MoonMissionSlots.animateWheel('#dial-3', 0, dial3Location);
-        }, 300);
+        }, 800);
         
     },
 
     animateWheel: function(dialId, numberChanges, dialLocation){
         var currentLocation;
 
-        if ((dialId === '#dial-1' && numberChanges > 55) || (dialId === '#dial-2' && numberChanges > 80) || (dialId === '#dial-3' && numberChanges > 110)){
+        if ((dialId === '#dial-1' && numberChanges > 25) || (dialId === '#dial-2' && numberChanges > 40) || (dialId === '#dial-3' && numberChanges > 55)){
             // get the current location from the id of the dial in the middle of the view (4th down)
             currentLocation = $(dialId + ' div:nth-child(4)')[0].id.slice(7);
 
@@ -397,8 +391,8 @@ MoonMissionSlots = {
     doWheelAnimation: function(dialId, numberChanges, dialLocation){
          // clone and append this picture to the bottom of the wheel
         $(dialId + ' div:first-child').clone().appendTo($(dialId));
-        // animate the wheel with simple picture shrinking animation (if numberChanges > 20 && numberChanges < 75, time=numberChanges, else 20/75)
-        $(dialId + ' div:first-child').animate({height: '0'}, Math.min(Math.max(numberChanges, 20), (75 + numberChanges/10)), 'linear', function(){
+        // animate the wheel with simple picture shrinking animation with a variable speed to simulate the wheel spinning.
+        $(dialId + ' div:first-child').animate({height: '0'}, Math.min(Math.max(1.75 * numberChanges, 10), (80 + numberChanges/4)), 'linear', function(){
             // delete the shrunken (and now cloned) div
             $(dialId + ' div:first-child').remove();
             // recursively call this function...
@@ -464,9 +458,9 @@ MoonMissionSlots = {
         MoonMissionSlots.totalProfit = MoonMissionSlots.totalProfit.add(winningsEther);
 
         if (winningsMultiple > 0){
-            $('#score-pop').text('\u25CA' + String(winningsEther)).show().animate({bottom: '70%'}, 2000, () => {
+            $('#score-pop').text('\u25CA' + winningsEther.toString().slice(0,9)).show().animate({bottom: '70%'}, 2000, () => {
 
-                $('#score-pop').fadeOut(500, () => {
+                $('#score-pop').fadeOut(600, () => {
                     // reset the css to go back down
                     $('#score-pop').css({bottom: '10%'})
                 });

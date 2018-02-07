@@ -49,10 +49,10 @@
   bottom: 10%;
   display: none;
   position: absolute;
-  right: 10%;
+  right: 30%;
   text-align: center;
   color: #00d936;
-  font-size: 300%;
+  font-size: 600%;
 }
 
 #number-spins-slider-handle {
