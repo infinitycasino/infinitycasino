@@ -101,11 +101,13 @@ MoonMissionSlots = {
                 web3.version.getNetwork( (error, result) => {
                     if (error || result !== '4'){
                         launchWrongNetworkModal('Moon Mission Slots');
+                        return;
                     }
                 });
             }
             else {
                 launchNoMetaMaskModal('Moon Mission Slots');
+                return;
             }
 
             return MoonMissionSlots.initContract(web3);

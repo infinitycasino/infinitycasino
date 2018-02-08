@@ -77,11 +77,13 @@ InfinityBankroll = {
                 web3.version.getNetwork( (error, result) => {
                     if (error || result !== '4'){
                         launchWrongNetworkModal('Infinity Bankroll');
+                        return;
                     }
                 });
             }
             else {
                 launchNoMetaMaskModal('Infinity Bankroll');
+                return;
             }
 
             return InfinityBankroll.initContract(web3);

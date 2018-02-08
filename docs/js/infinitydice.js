@@ -76,15 +76,20 @@ InfinityDice = {
                 web3.version.getNetwork( (error, result) => {
                     if (error || result !== '4'){
                         launchWrongNetworkModal('Infinity Dice');
+                        return;
+                    }
+                    else {
+                        // if everything is ok, then get contract details
+                        return InfinityDice.initContract(web3);
                     }
                 });
+
+                
             }
             else {
                 launchNoMetaMaskModal('Infinity Dice');
+                return;
             }
-
-            return InfinityDice.initContract(web3);
-
         }, 500);
     },
 

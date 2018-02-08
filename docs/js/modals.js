@@ -1,6 +1,6 @@
 function launchNoLoginModal(title){
 	// if accounts = [] instruct the user to log in to metamask and refesh the page.
-	var html = '<div class="modal fade show" id="no-login-modal" tabindex="-1" role="dialog" aria-labelledby="no-login" aria-hidden="true">';
+	var html = '<div class="modal fade" id="no-login-modal" tabindex="-1" role="dialog" aria-labelledby="no-login" aria-hidden="true" style="display:none;">';
   	html += 		'<div class="modal-dialog modal-dialog-centered" role="document">';
     html += 			'<div class="modal-content" style="opacity:0.95; background-color:grey; color:white;">';
     html += 				'<div class="modal-header">';
@@ -16,7 +16,7 @@ function launchNoLoginModal(title){
     html += 					'<br />';
     html += 				'</div>';
     html += 				'<div class="modal-footer">';
-    html += 					'<button type="button" class="btn btn-secondary" style="background-color:black;" onClick="closeModal( ' + "'no-login-modal'" +')">Close</button>';
+    html += 					'<button type="button" class="btn btn-secondary" style="background-color:black;" onClick="closeModal(' + "'no-login-modal'" +')">Close</button>';
     html += 				'</div>';
     html += 			'</div>';
 	html += 		'</div>';
@@ -28,7 +28,7 @@ function launchNoLoginModal(title){
 
 function launchNoMetaMaskModal(title){
 	// if no metamask installed, launch a modal explaining MetaMask with an install
-	var html = '<div class="modal fade" id="no-metamask-modal" tabindex="-1" role="dialog" aria-labelledby="no-metamask" aria-hidden="true style="display:none;">';
+	var html = '<div class="modal fade" id="no-metamask-modal" tabindex="-1" role="dialog" aria-labelledby="no-metamask" aria-hidden="true" style="display:none;">';
   	html += 		'<div class="modal-dialog modal-dialog-centered" role="document">';
     html += 			'<div class="modal-content" style="opacity:0.95; background-color:grey; color:white;">';
     html += 				'<div class="modal-header">';
@@ -57,7 +57,7 @@ function launchNoMetaMaskModal(title){
 
 function launchWrongNetworkModal(title){
     // if the user is not on ropsten (CHANGE TO MAINNET ON LAUNCH!!!) then notify the user with a modal stating this
-    var html = '<div class="modal fade show" id="wrong-network-modal" tabindex="-1" role="dialog" aria-labelledby="no-login" aria-hidden="true">';
+    var html = '<div class="modal fade" id="wrong-network-modal" tabindex="-1" role="dialog" aria-labelledby="no-login" aria-hidden="true" style="display:none;">';
     html +=         '<div class="modal-dialog modal-dialog-centered" role="document">';
     html +=             '<div class="modal-content" style="opacity:0.95; background-color:grey; color:white;">';
     html +=                 '<div class="modal-header">';
@@ -73,7 +73,7 @@ function launchWrongNetworkModal(title){
     html +=                     '<br />';
     html +=                 '</div>';
     html +=                 '<div class="modal-footer">';
-    html +=                     '<button type="button" class="btn btn-secondary" style="background-color:black;" onClick="closeModal( ' + "'wrong-network-modal'" +')">Close</button>';
+    html +=                     '<button type="button" class="btn btn-secondary" style="background-color:black;" onClick="closeModal(' + "'wrong-network-modal'" +')">Close</button>';
     html +=                 '</div>';
     html +=             '</div>';
     html +=         '</div>';
