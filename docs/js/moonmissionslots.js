@@ -97,6 +97,12 @@ MoonMissionSlots = {
             if (typeof web3 !== 'undefined'){
                 console.log('getting web3');
                 MoonMissionSlots.web3Provider = web3.currentProvider;
+
+                web3.version.getNetwork( (error, result) => {
+                    if (error || result !== '4'){
+                        launchWrongNetworkModal('Moon Mission Slots');
+                    }
+                });
             }
             else {
                 launchNoMetaMaskModal('Moon Mission Slots');

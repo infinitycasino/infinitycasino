@@ -38,10 +38,11 @@ function launchNoMetaMaskModal(title){
     html += 					'</button>';
     html += 				'</div>';
     html += 				'<div class="modal-body">'
-    html += 					"<text>Hello and welcome to " + title.toString() + "! It seems as if you don't have MetaMask installed. Metamask is a browser based Ethereum wallet, that allows you to interact with the blockchain from our website and play our games.</text>";
+    html += 					"<text>Hello and welcome to " + title.toString() + "! It seems as if you don't have MetaMask installed. MetaMask is a browser based Ethereum wallet, that allows you to interact with the blockchain from our website and play our games.</text>";
     html += 					'<br /><br />';
-    html += 					'<text>Please download Metamask, and then fund your Metamask wallet with Ether. Please see our <a href="/support.html">FAQ & Support Page</a> for more details!</text>';
-    html += 					'<a href="https://metamask.io" target="_blank" class="btn btn-secondary" id="metamask-button">Install Metamask</a>';
+    html += 					'<text>Please download MetaMask, and then fund your MetaMask wallet with Ether. Please see our <a href="/support.html">FAQ & Support Page</a> for more details!</text>';
+    html +=                     '<br />';
+    html += 					'<a href="https://metamask.io" style="background-color:orange;" target="_blank" class="btn btn-secondary" id="metamask-button"><img src="/img/metamask-head.png" width="30" height="30">&emsp;<b>Install MetaMask</b></a>';
     html += 				'</div>';
     html += 				'<div class="modal-footer">';
     html += 					'<button type="button" class="btn btn-secondary" onClick="closeModal(' + "'no-metamask-modal'" + ')">Close</button>';
@@ -52,6 +53,34 @@ function launchNoMetaMaskModal(title){
 
 	$('#modal-div').html(html);
     $('#no-metamask-modal').modal('show');
+}
+
+function launchWrongNetworkModal(title){
+    // if the user is not on ropsten (CHANGE TO MAINNET ON LAUNCH!!!) then notify the user with a modal stating this
+    var html = '<div class="modal fade show" id="wrong-network-modal" tabindex="-1" role="dialog" aria-labelledby="no-login" aria-hidden="true">';
+    html +=         '<div class="modal-dialog modal-dialog-centered" role="document">';
+    html +=             '<div class="modal-content">';
+    html +=                 '<div class="modal-header">';
+    html +=                     '<h5 class="modal-title" id="no-login">Welcome to ' + title.toString() + '!</h5>';
+    html +=                     '<button type="button" class="close" onClick="closeModal(' + "'wrong-network-modal'" + ')" aria-label="Close">';
+    html +=                         '<span aria-hidden="true">&times;</span>';
+    html +=                     '</button>';
+    html +=                 '</div>';
+    html +=                 '<div class="modal-body">';
+    var catchLine;
+    title === 'Infinity Dice' ? catchLine = 'rolling!' : title == 'Moon Mission Slots' ? catchLine = 'spinning!' : catchLine = 'collecting some dividends!';
+    html +=                     "<text>Hello and welcome to " + title.toString() + "! It seems you are on the wrong Ethereum network! Please change the network to Rinkeby, refresh the page, and then start " + catchLine + "</text>";
+    html +=                     '<br />';
+    html +=                 '</div>';
+    html +=                 '<div class="modal-footer">';
+    html +=                     '<button type="button" class="btn btn-secondary" onClick="closeModal( ' + "'wrong-network-modal'" +')">Close</button>';
+    html +=                 '</div>';
+    html +=             '</div>';
+    html +=         '</div>';
+    html +=     '</div>';
+
+    $('#modal-div').html(html);
+    $('#wrong-network-modal').modal('show');
 }
 
 function closeModal(id){
