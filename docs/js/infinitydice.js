@@ -306,11 +306,10 @@ InfinityDice = {
 
         // increment or decrement current profit based on win or not
         win ? InfinityDice.currentProfit = InfinityDice.currentProfit.add(winSize) : InfinityDice.currentProfit = InfinityDice.currentProfit.minus(InfinityDice.betPerRoll);
-        console.log(InfinityDice.currentProfit);
-        await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
 
         InfinityDice.onRoll += 1;
 
+        await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
     },
 
     calculateMaxBet: function(rollUnder){
@@ -519,7 +518,7 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
     var thisRoll;
 
     // break if the rolls are completed.
-    if (onRoll >= totalRolls){
+    if (onRoll > totalRolls){
         return;
     }
 
@@ -528,7 +527,7 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
     var rollAnimation = function(){
         
         // if the interval is small, then show a random number and increment the interval, then set another timeout with new interval
-        if (interval < 500){
+        if (interval < 400){
 
             interval *= 1.15;
             $('#your-number').text(Math.floor(Math.random() * 100) + 1);
@@ -538,28 +537,36 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
         // if the interval is large, then end the animation.
             // if the bettor won, then choose a random number below the rollUnder, and update the UI
             // if the bettor lost, then choose a random number above the rollUnder, ...
+
         else {
+            var cssColor;
+
             if (! win){
                 thisRoll = Math.floor(Math.random() * (100 - rollUnder) + (rollUnder + 1));
 
                 $('#your-number').text(thisRoll);
-                setTimeout( () => {
-                    updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'red'});
-                }, 500);
+                cssColor = {'color' : 'red'}
             }
 
             else {
                 thisRoll = Math.floor(Math.random() * (rollUnder - 1) + 1);
                 
                 $('#your-number').text(thisRoll);
-
-                setTimeout( () => {
-                    updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'green'});
-                }, 500); 
+                cssColor = {'color' : 'green'};
             }
+            // update ticker and re-enable button
+            setTimeout( () => {
+
+                    updateTicker(onRoll, totalRolls, currentProfit, cssColor);
+
+                    if(onRoll < totalRolls) $('#roll-dice').removeClass('disabled');
+                    
+                    $('#roll-dice').click( () => {InfinityDice.rollDice()} );
+
+                }, 500);
+
              // enable the ROLL button once the roll has resolved.
-             $('#roll-dice').removeClass('disabled');
-             $('#roll-dice').click( () => {InfinityDice.rollDice()} );
+             
             checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll);
         }
     }
