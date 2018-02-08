@@ -75,8 +75,7 @@ InfinityBankroll = {
                 InfinityBankroll.web3Provider = web3.currentProvider;
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Infinity Bankroll');
             }
 
             return InfinityBankroll.initContract(web3);
@@ -103,6 +102,10 @@ InfinityBankroll = {
     },
 
     getUserDetails: function(web3){
+        var accounts = web3.eth.accounts;
+        if (accounts.length === 0){
+            launchNoLoginModal('Infinity Bankroll');
+        }
 
         return InfinityBankroll.getContractDetails(web3);
     },

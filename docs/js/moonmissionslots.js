@@ -99,8 +99,7 @@ MoonMissionSlots = {
                 MoonMissionSlots.web3Provider = web3.currentProvider;
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Moon Mission Slots');
             }
 
             return MoonMissionSlots.initContract(web3);
@@ -185,7 +184,7 @@ MoonMissionSlots = {
     getPlayerDetails: function(web3){
         var accounts = web3.eth.accounts;
         if (accounts.length === 0){
-            alert('Please login to metamask, and reload the page!');
+            launchNoLoginModal('Moon Mission Slots');
         }
         else {
             var playersAccount = accounts[0];

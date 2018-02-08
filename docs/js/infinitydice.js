@@ -74,8 +74,7 @@ InfinityDice = {
                 InfinityDice.web3Provider = web3.currentProvider;
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Infinity Dice');
             }
 
             return InfinityDice.initContract(web3);
@@ -166,7 +165,7 @@ InfinityDice = {
     getPlayerDetails: function(web3){
         var accounts = web3.eth.accounts;
         if (accounts.length === 0){
-            alert('Please login to metamask, and reload the page!');
+            launchNoLoginModal('Infinity Dice');
         }
         else {
             var playersAccount = accounts[0];
