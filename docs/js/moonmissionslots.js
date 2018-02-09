@@ -346,64 +346,72 @@ MoonMissionSlots = {
         var dial3Location = String(MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type][Math.floor(Math.random() * MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type].length)]);
 
         // spin through all combinations, and then blindly search for the previously determined dial position
-
-        MoonMissionSlots.animateWheel('#dial-1', 0, dial1Location);
-
-        setTimeout(function(){
-            MoonMissionSlots.animateWheel('#dial-2', 0, dial2Location);
-        }, 400);
-
-        setTimeout(function(){
-            MoonMissionSlots.animateWheel('#dial-3', 0, dial3Location);
-        }, 800);
-        
+        MoonMissionSlots.animateWheel('#dial-1', 0, dial1Location, false);
+        MoonMissionSlots.animateWheel('#dial-2', 0, dial2Location, false);
+        MoonMissionSlots.animateWheel('#dial-3', 0, dial3Location, false);
     },
 
-    animateWheel: function(dialId, numberChanges, dialLocation){
+    animateWheel: function(dialId, numberChanges, dialLocation, searching){
+
         var currentLocation;
 
-        if ((dialId === '#dial-1' && numberChanges > 25) || (dialId === '#dial-2' && numberChanges > 40) || (dialId === '#dial-3' && numberChanges > 55)){
+        // dial 1 search & stop after 32 spins
+        // dial 2 search & stop after 96 spins
+        // dial 3 search & stop after 160 spins
+        if ((dialId === '#dial-1' && (numberChanges > 0 || searching)) || (dialId === '#dial-2' && (numberChanges > 64 || searching)) || (dialId === '#dial-3' && (numberChanges > 128 || searching))){
             // get the current location from the id of the dial in the middle of the view (4th down)
             currentLocation = $(dialId + ' div:nth-child(4)')[0].id.slice(7);
 
-            if (currentLocation !== dialLocation){
-                // if the dial isn't in the correct location, then keep spinning
-               MoonMissionSlots.doWheelAnimation(dialId, numberChanges, dialLocation);
+            // start "search"... aka spin 64 more times and slowly come to a stop
+            if (!searching && currentLocation === dialLocation){
+                MoonMissionSlots.doWheelAnimation(dialId, 1, dialLocation, true);
             }
-            else if (currentLocation === dialLocation && dialId === '#dial-3'){
-                // if the third dial is done spinning (means they all are done spinning), animate the payment
-                MoonMissionSlots.animatePayment();
-                 // re-enable the spin button
-                 $('#spin-wheel').removeClass('disabled');
-                 $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
+            // done with search, display a payout if there is one & the third dial is done spinning!
+            else if (searching && numberChanges === 64){
+                if (dialId === '#dial-3'){
+                    console.log('DONE!!!!!!!');
+                    // if the third dial is done spinning (means they all are done spinning), animate the payment
+                    MoonMissionSlots.animatePayment();
+                }
+                console.log('HERE!!!!!!!');
+                // finished!
 
-                console.log('done with dial 3');
             }
+            // keep going like normal!
             else {
-                // otherwise, just quietly end the recursive call
-                if (dialId === '#dial-1'){
-                    console.log('done with dial 1')
-                }
-                else {
-                    console.log('done with dial 2')
-                }
+                MoonMissionSlots.doWheelAnimation(dialId, numberChanges + 1, dialLocation, searching);
             }
-        }   
-        else {
-            // keep spinning
-            MoonMissionSlots.doWheelAnimation(dialId, numberChanges, dialLocation); 
         }
+        // not searching, just keep spinning fast
+        else {
+            MoonMissionSlots.doWheelAnimation(dialId, numberChanges + 1, dialLocation, false); 
+        }
+        
     },
 
-    doWheelAnimation: function(dialId, numberChanges, dialLocation){
-         // clone and append this picture to the bottom of the wheel
+    doWheelAnimation: function(dialId, numberChanges, dialLocation, searching){
+        var animationSpeed;
+
+        if (! searching){
+            // set animation speed high, wheel is still spinning fast.
+            animationSpeed = 15;
+        }
+        // if the wheel is searching for a stop, then gradually slow and stop on the correct element
+        else {
+            animationSpeed = 15 + (1.5 * numberChanges);
+        }
+        // NOW DO THE ANIMATION...
+
+        // clone and append this picture to the bottom of the wheel
         $(dialId + ' div:first-child').clone().appendTo($(dialId));
+
         // animate the wheel with simple picture shrinking animation with a variable speed to simulate the wheel spinning.
-        $(dialId + ' div:first-child').animate({height: '0'}, Math.min(Math.max(1.75 * numberChanges, 10), (80 + numberChanges/4)), 'linear', function(){
+        $(dialId + ' div:first-child').animate({height: '0'}, animationSpeed, 'linear', () => {
             // delete the shrunken (and now cloned) div
             $(dialId + ' div:first-child').remove();
-            // recursively call this function...
-            MoonMissionSlots.animateWheel(dialId, numberChanges + 1, dialLocation);
+
+            // Call animate wheel again...
+            MoonMissionSlots.animateWheel(dialId, numberChanges, dialLocation, searching);
         });
     },
 
@@ -480,27 +488,26 @@ MoonMissionSlots = {
 
         updateTicker(MoonMissionSlots.onCredit, MoonMissionSlots.credits, MoonMissionSlots.totalProfit, cssColor);
 
-        
         // roll has resolved, so increment the credits
         MoonMissionSlots.onCredit += 1;
 
-         // possibly end game if out of credits
+        // possibly end game if out of credits
         if (MoonMissionSlots.onCredit > MoonMissionSlots.credits){
-            $('#spin-wheel').addClass('disabled');
 
             setTimeout( () => {
                 $('#spin-bets').hide();
                 $('#place-bets').show();
                 $('#spin-wheel').removeClass('disabled');
+                $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
             }, 5000);
+        }
+        // just immeiately re-enable the button for another sesh
+        else {
+            $('#spin-wheel').removeClass('disabled');
+            $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
         }
     },
 };
-
-$(document).ready(function(){
-    initUI();
-    MoonMissionSlots.init();
-});
 
 function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
      // since the user won, animate the status bar in green
@@ -516,6 +523,10 @@ function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
     }, 500);
 }
 
+$(document).ready(function(){
+    initUI();
+    MoonMissionSlots.init();
+});
 
 function initUI(){
     spinCountValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,18,20,22,24,26,28,30,35,40,45,50,55,60,70,80,90,100,120,140,160,180,200,224];
