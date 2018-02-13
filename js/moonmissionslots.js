@@ -97,14 +97,21 @@ MoonMissionSlots = {
             if (typeof web3 !== 'undefined'){
                 console.log('getting web3');
                 MoonMissionSlots.web3Provider = web3.currentProvider;
+
+                web3.version.getNetwork( (error, result) => {
+                    if (error || result !== '4'){
+                        launchWrongNetworkModal('Moon Mission Slots');
+                        return;
+                    }
+                    else {
+                        return MoonMissionSlots.initContract(web3);
+                    }
+                });
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Moon Mission Slots');
+                return;
             }
-
-            return MoonMissionSlots.initContract(web3);
-
         }, 500);
     },
 
@@ -114,7 +121,7 @@ MoonMissionSlots = {
             var slotsAbi = data;
 
             MoonMissionSlots.Slots = web3.eth.contract(slotsAbi);
-            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x508bac59c401e3124e6742b3b5658bd7354b0cb7');
+            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x2411d2263811E5b216a7Cc747eAbc6DB00B8F207');
 
             return MoonMissionSlots.getContractDetails(web3);
 
@@ -185,7 +192,7 @@ MoonMissionSlots = {
     getPlayerDetails: function(web3){
         var accounts = web3.eth.accounts;
         if (accounts.length === 0){
-            alert('Please login to metamask, and reload the page!');
+            launchNoLoginModal('Moon Mission Slots');
         }
         else {
             var playersAccount = accounts[0];
@@ -338,82 +345,84 @@ MoonMissionSlots = {
         var dial2Location = String(MoonMissionSlots.dial2Layout[MoonMissionSlots.dial2Type][Math.floor(Math.random() * MoonMissionSlots.dial2Layout[MoonMissionSlots.dial2Type].length)]);
         var dial3Location = String(MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type][Math.floor(Math.random() * MoonMissionSlots.dial3Layout[MoonMissionSlots.dial3Type].length)]);
 
-        console.log('dial 1 type', MoonMissionSlots.dial1Type);
-        console.log('dial 2 type', MoonMissionSlots.dial2Type);
-        console.log('dial 3 type', MoonMissionSlots.dial3Type);
-
-        console.log('You got ' +  dial1Location + ' -- ' + dial2Location + ' -- ' + dial3Location);
-
-        // spin through all combinations in dial-1 2x, dial-2 2.5x, and dial-3 3x
-
-        MoonMissionSlots.animateWheel('#dial-1', 0, dial1Location);
-
-        setTimeout(function(){
-            MoonMissionSlots.animateWheel('#dial-2', 0, dial2Location);
-        }, 150);
-
-        setTimeout(function(){
-            MoonMissionSlots.animateWheel('#dial-3', 0, dial3Location);
-        }, 300);
-        
+        // spin through all combinations, and then blindly search for the previously determined dial position
+        MoonMissionSlots.animateWheel('#dial-1', 0, dial1Location, false);
+        MoonMissionSlots.animateWheel('#dial-2', 0, dial2Location, false);
+        MoonMissionSlots.animateWheel('#dial-3', 0, dial3Location, false);
     },
 
-    animateWheel: function(dialId, numberChanges, dialLocation){
+    animateWheel: function(dialId, numberChanges, dialLocation, searching){
+
         var currentLocation;
 
-        if ((dialId === '#dial-1' && numberChanges > 55) || (dialId === '#dial-2' && numberChanges > 80) || (dialId === '#dial-3' && numberChanges > 110)){
+        // dial 1 search & stop after 32 spins
+        // dial 2 search & stop after 96 spins
+        // dial 3 search & stop after 160 spins
+        if ((dialId === '#dial-1' && (numberChanges > 0 || searching)) || (dialId === '#dial-2' && (numberChanges > 64 || searching)) || (dialId === '#dial-3' && (numberChanges > 128 || searching))){
             // get the current location from the id of the dial in the middle of the view (4th down)
             currentLocation = $(dialId + ' div:nth-child(4)')[0].id.slice(7);
 
-            if (currentLocation !== dialLocation){
-                // if the dial isn't in the correct location, then keep spinning
-               MoonMissionSlots.doWheelAnimation(dialId, numberChanges, dialLocation);
+            // start "search"... aka spin 64 more times and slowly come to a stop
+            if (!searching && currentLocation === dialLocation){
+                MoonMissionSlots.doWheelAnimation(dialId, 1, dialLocation, true);
             }
-            else if (currentLocation === dialLocation && dialId === '#dial-3'){
-                // if the third dial is done spinning (means they all are done spinning), animate the payment
-                MoonMissionSlots.animatePayment();
-                 // re-enable the spin button
-                 $('#spin-wheel').removeClass('disabled');
-                 $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
+            // done with search, display a payout if there is one & the third dial is done spinning!
+            else if (searching && numberChanges === 64){
+                if (dialId === '#dial-3'){
+                    console.log('DONE!!!!!!!');
+                    // if the third dial is done spinning (means they all are done spinning), animate the payment
+                    MoonMissionSlots.animatePayment();
+                }
+                console.log('HERE!!!!!!!');
+                // finished!
 
-                console.log('done with dial 3');
             }
+            // keep going like normal!
             else {
-                // otherwise, just quietly end the recursive call
-                if (dialId === '#dial-1'){
-                    console.log('done with dial 1')
-                }
-                else {
-                    console.log('done with dial 2')
-                }
+                MoonMissionSlots.doWheelAnimation(dialId, numberChanges + 1, dialLocation, searching);
             }
-        }   
-        else {
-            // keep spinning
-            MoonMissionSlots.doWheelAnimation(dialId, numberChanges, dialLocation); 
         }
+        // not searching, just keep spinning fast
+        else {
+            MoonMissionSlots.doWheelAnimation(dialId, numberChanges + 1, dialLocation, false); 
+        }
+        
     },
 
-    doWheelAnimation: function(dialId, numberChanges, dialLocation){
-         // clone and append this picture to the bottom of the wheel
+    doWheelAnimation: function(dialId, numberChanges, dialLocation, searching){
+        var animationSpeed;
+
+        if (! searching){
+            // set animation speed high, wheel is still spinning fast.
+            animationSpeed = 15;
+        }
+        // if the wheel is searching for a stop, then gradually slow and stop on the correct element
+        else {
+            animationSpeed = 15 + (1.5 * numberChanges);
+        }
+        // NOW DO THE ANIMATION...
+
+        // clone and append this picture to the bottom of the wheel
         $(dialId + ' div:first-child').clone().appendTo($(dialId));
-        // animate the wheel with simple picture shrinking animation (if numberChanges > 20 && numberChanges < 75, time=numberChanges, else 20/75)
-        $(dialId + ' div:first-child').animate({height: '0'}, Math.min(Math.max(numberChanges, 20), (75 + numberChanges/10)), 'linear', function(){
+
+        // animate the wheel with simple picture shrinking animation with a variable speed to simulate the wheel spinning.
+        $(dialId + ' div:first-child').animate({height: '0'}, animationSpeed, 'linear', () => {
             // delete the shrunken (and now cloned) div
             $(dialId + ' div:first-child').remove();
-            // recursively call this function...
-            MoonMissionSlots.animateWheel(dialId, numberChanges + 1, dialLocation);
+
+            // Call animate wheel again...
+            MoonMissionSlots.animateWheel(dialId, numberChanges, dialLocation, searching);
         });
     },
 
     animatePayment: function(){
         var winningsMultiple = 0;
 
-        if (MoonMissionSlots.dial1Type === 0 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 2){
-            winningsMultiple = 10000;
+        if (MoonMissionSlots.dial1Type === 2 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 0){
+            winningsMultiple = 5000;
         }
         else if (MoonMissionSlots.dial1Type === 0 && MoonMissionSlots.dial2Type === 0 && MoonMissionSlots.dial3Type === 0){
-            winningsMultiple = 1500;
+            winningsMultiple = 1777;
         }
         else if (MoonMissionSlots.dial1Type === 1 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 1){
             winningsMultiple = 250;
@@ -421,11 +430,11 @@ MoonMissionSlots = {
         else if (MoonMissionSlots.dial1Type === 2 && MoonMissionSlots.dial2Type === 2 && MoonMissionSlots.dial3Type === 2){
             winningsMultiple = 250;
         }
-        else if (MoonMissionSlots.dial1Type >= 0 && MoonMissionSlots.dial1Type <= 2 && MoonMissionSlots.dial2Type >= 0 && MoonMissionSlots.dial2Type <= 2 && MoonMissionSlots.dial3Type >= 0 && MoonMissionSlots.dial3Type <= 3){
-            winningsMultiple = 90;
+        else if (MoonMissionSlots.dial1Type >= 0 && MoonMissionSlots.dial1Type <= 2 && MoonMissionSlots.dial2Type >= 0 && MoonMissionSlots.dial2Type <= 2 && MoonMissionSlots.dial3Type >= 0 && MoonMissionSlots.dial3Type <= 2){
+            winningsMultiple = 95;
         }
         else if (MoonMissionSlots.dial1Type === 5 && MoonMissionSlots.dial1Type === 4 && MoonMissionSlots.dial3Type === 3){
-            winningsMultiple = 100;
+            winningsMultiple = 90;
         }
         else if (MoonMissionSlots.dial1Type === 3 && MoonMissionSlots.dial2Type === 3 && MoonMissionSlots.dial3Type === 3){
             winningsMultiple = 50;
@@ -464,9 +473,9 @@ MoonMissionSlots = {
         MoonMissionSlots.totalProfit = MoonMissionSlots.totalProfit.add(winningsEther);
 
         if (winningsMultiple > 0){
-            $('#score-pop').text('\u25CA' + String(winningsEther)).show().animate({bottom: '70%'}, 2000, () => {
+            $('#score-pop').text('\u25CA' + winningsEther.toString().slice(0,9)).show().animate({bottom: '70%'}, 2000, () => {
 
-                $('#score-pop').fadeOut(500, () => {
+                $('#score-pop').fadeOut(600, () => {
                     // reset the css to go back down
                     $('#score-pop').css({bottom: '10%'})
                 });
@@ -479,27 +488,26 @@ MoonMissionSlots = {
 
         updateTicker(MoonMissionSlots.onCredit, MoonMissionSlots.credits, MoonMissionSlots.totalProfit, cssColor);
 
-        
         // roll has resolved, so increment the credits
         MoonMissionSlots.onCredit += 1;
 
-         // possibly end game if out of credits
+        // possibly end game if out of credits
         if (MoonMissionSlots.onCredit > MoonMissionSlots.credits){
-            $('#spin-wheel').addClass('disabled');
 
             setTimeout( () => {
                 $('#spin-bets').hide();
                 $('#place-bets').show();
                 $('#spin-wheel').removeClass('disabled');
+                $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
             }, 5000);
+        }
+        // just immeiately re-enable the button for another sesh
+        else {
+            $('#spin-wheel').removeClass('disabled');
+            $('#spin-wheel').click( () => {MoonMissionSlots.spinWheel()} );
         }
     },
 };
-
-$(document).ready(function(){
-    initUI();
-    MoonMissionSlots.init();
-});
 
 function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
      // since the user won, animate the status bar in green
@@ -515,6 +523,10 @@ function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
     }, 500);
 }
 
+$(document).ready(function(){
+    initUI();
+    MoonMissionSlots.init();
+});
 
 function initUI(){
     spinCountValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,18,20,22,24,26,28,30,35,40,45,50,55,60,70,80,90,100,120,140,160,180,200,224];

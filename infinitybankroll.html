@@ -71,8 +71,9 @@
 			</nav>
 		</section>
 
-		<section id="splash-screen">
+		<div id="modal-div"></div>
 
+		<section id="splash-screen">
 			<div class="container-fluid splash-screen">
 				<div class="container">
 					<!-- title and photo -->
@@ -83,7 +84,11 @@
 							</h1>
 							<h3 class="bankroll-text-subtitle">Deposit ETH, cash out more ETH. It's really that simple.</h3>
 						</div>
+						<div class="col-lg-4 hide-lg-down" style="overflow: visible;">
+							<img class="img-fluid" src="/img/bankroll-hero.png">
+						</div>
 					</div> <!-- /.row -->
+
 					<div class="row">
 						<div class="col-lg-8 col-md-10">
 							<br />
@@ -204,6 +209,7 @@
 		<!-- web3.js version 0.19.0 -->
 		<script src="js/web3.min.js"></script>
 		<script src="js/bignumber.min.js"></script>
+		<script src="js/modals.js"></script>
 		<script src="js/infinitybankroll.js"></script>
 	</body>
 

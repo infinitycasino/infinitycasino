@@ -73,14 +73,21 @@ InfinityBankroll = {
             if (typeof web3 !== 'undefined'){
                 console.log('getting web3');
                 InfinityBankroll.web3Provider = web3.currentProvider;
+
+                web3.version.getNetwork( (error, result) => {
+                    if (error || result !== '4'){
+                        launchWrongNetworkModal('Infinity Bankroll');
+                        return;
+                    }
+                    else {
+                        return InfinityBankroll.initContract(web3);
+                    }
+                });
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Infinity Bankroll');
+                return;
             }
-
-            return InfinityBankroll.initContract(web3);
-
         }, 500);
     },
 
@@ -90,7 +97,7 @@ InfinityBankroll = {
             var bankrollAbi = data;
             // rinkeby: 0x6ce0f38DB787434f2ED0C7DE8C61be2FAAe87f32
             InfinityBankroll.Bankroll = web3.eth.contract(bankrollAbi);
-            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0x305835a554eec10684d3c97d09424eb70ac060f4');
+            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0xB3E74ceE8879d0E8eB421eCC39fDb428b4Ab8910');
 
             return InfinityBankroll.getUserDetails(web3);
 
@@ -103,6 +110,10 @@ InfinityBankroll = {
     },
 
     getUserDetails: function(web3){
+        var accounts = web3.eth.accounts;
+        if (accounts.length === 0){
+            launchNoLoginModal('Infinity Bankroll');
+        }
 
         return InfinityBankroll.getContractDetails(web3);
     },

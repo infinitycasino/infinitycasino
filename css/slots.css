@@ -1,41 +1,132 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Monoton');
+
 .slots-splash-screen {
 	background-color: #333333;
 	padding-top: 1em;
 	z-index: 1;
 }
 .slots-text-title{
-	font-size: 400%;
+	font-size: 130%;
 	color: #FFFFFF;
 }
 .stats {
-  font-size: 150%;
+  font-size: 100%;
   color: #FFFFFF;
 }
 .stats-text{
   	color: #FFFFFF;
 }
 .slots-screen{
-	background-color: #000000;
+	background-image: url('/img/slots-background.png');
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 	height: 90vh;
-	/*overflow: hidden;*/
+}
+.slots-machine{
+  align-content: center;
 }
 
 /*SLOTS CSS*/
 .dial {
-  border: 5px solid #D3D3D3;
   border-radius: 10px;
-  height: 450px;
-  width: 25%;
+  position: relative;
   overflow: hidden;
   background-color: #FFFFFF;
   margin-left: 1em;
+  box-shadow: 0 0 30px rgba(66, 226, 244, 0.8);
 }
 
 .dial-container  {
-  /*overflow: hidden;*/
   text-align: center;
   overflow: hidden;
   margin-top: -300px;
+}
+
+.dial-background {
+  position: absolute;
+  z-index: 2;
+  margin-left: -0.9em;
+}
+
+
+@media (min-width: 0px){
+  .dial-container{
+    margin-top: -130px;
+  }
+  .dial-slot {
+    height: 65px;
+    width: 65px;
+  }
+  .dial {
+    height: 195px;
+  }
+}
+@media (min-width: 576px){
+  .dial-container{
+    margin-top: -200px;
+  }
+  .dial-slot {
+    height: 100px;
+    width: 100px;
+  }
+  .dial {
+    height: 300px;
+  }
+}
+@media (min-width: 768px){
+  .dial-container{
+    margin-top: -250px
+  }
+  .dial-slot {
+    height: 125px;
+    width: 125px;
+  }
+  .dial {
+    height: 375px;
+  }
+}
+@media (min-width: 992px){
+  .dial-container{
+    margin-top: -350px
+  }
+  .dial-slot {
+    height: 175px;
+    width: 175px;
+  }
+  .dial {
+    height: 525px;
+  }
+}
+@media (min-width: 1200px){
+  .dial-container{
+    margin-top: -400px
+  }
+  .dial-slot {
+    height: 200px;
+    width: 200px;
+  }
+  .dial {
+    height: 600px;
+  }
+}
+
+.spin-wheel-text{
+  font-size: 300%;
+  font-family: 'Monoton', cursive;
+}
+.spin-wheel{
+  background-color: rgb(66, 226, 244);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 30px rgba(66, 226, 244, 0.8);
+  width: 80%; 
+  margin-left: 1em;
+}
+.spin-wheel.disabled{
+  box-shadow: 0 0 0;
 }
 
 .spin-text{
@@ -49,10 +140,11 @@
   bottom: 10%;
   display: none;
   position: absolute;
-  right: 10%;
+  right: 30%;
   text-align: center;
   color: #00d936;
-  font-size: 300%;
+  font-size: 600%;
+  z-index: 10;
 }
 
 #number-spins-slider-handle {

@@ -72,14 +72,24 @@ InfinityDice = {
             if (typeof web3 !== 'undefined'){
                 console.log('getting web3');
                 InfinityDice.web3Provider = web3.currentProvider;
+
+                web3.version.getNetwork( (error, result) => {
+                    if (error || result !== '4'){
+                        launchWrongNetworkModal('Infinity Dice');
+                        return;
+                    }
+                    else {
+                        // if everything is ok, then get contract details
+                        return InfinityDice.initContract(web3);
+                    }
+                });
+
+                
             }
             else {
-                console.log('No Web3 instance given!');
-                // flash modal saying "please download Metamask"
+                launchNoMetaMaskModal('Infinity Dice');
+                return;
             }
-
-            return InfinityDice.initContract(web3);
-
         }, 500);
     },
 
@@ -89,7 +99,7 @@ InfinityDice = {
             var diceAbi = data;
             
             InfinityDice.Dice = web3.eth.contract(diceAbi);
-            InfinityDice.diceInstance = InfinityDice.Dice.at('0xc7a2fb4c518350dace3e8899a854132aa6f2112c');
+            InfinityDice.diceInstance = InfinityDice.Dice.at('0xec8e1042C9eC9386c75F79368697cd51c5731469');
 
             return InfinityDice.getContractDetails(web3);
 
@@ -166,7 +176,7 @@ InfinityDice = {
     getPlayerDetails: function(web3){
         var accounts = web3.eth.accounts;
         if (accounts.length === 0){
-            alert('Please login to metamask, and reload the page!');
+            launchNoLoginModal('Infinity Dice');
         }
         else {
             var playersAccount = accounts[0];
@@ -301,11 +311,10 @@ InfinityDice = {
 
         // increment or decrement current profit based on win or not
         win ? InfinityDice.currentProfit = InfinityDice.currentProfit.add(winSize) : InfinityDice.currentProfit = InfinityDice.currentProfit.minus(InfinityDice.betPerRoll);
-        console.log(InfinityDice.currentProfit);
-        await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
 
         InfinityDice.onRoll += 1;
 
+        await rollingDice(win, InfinityDice.rollUnder, winSize, InfinityDice.onRoll, InfinityDice.totalRolls, InfinityDice.betPerRoll, InfinityDice.currentProfit);
     },
 
     calculateMaxBet: function(rollUnder){
@@ -514,7 +523,7 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
     var thisRoll;
 
     // break if the rolls are completed.
-    if (onRoll >= totalRolls){
+    if (onRoll > totalRolls){
         return;
     }
 
@@ -523,7 +532,7 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
     var rollAnimation = function(){
         
         // if the interval is small, then show a random number and increment the interval, then set another timeout with new interval
-        if (interval < 500){
+        if (interval < 400){
 
             interval *= 1.15;
             $('#your-number').text(Math.floor(Math.random() * 100) + 1);
@@ -533,28 +542,36 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
         // if the interval is large, then end the animation.
             // if the bettor won, then choose a random number below the rollUnder, and update the UI
             // if the bettor lost, then choose a random number above the rollUnder, ...
+
         else {
+            var cssColor;
+
             if (! win){
                 thisRoll = Math.floor(Math.random() * (100 - rollUnder) + (rollUnder + 1));
 
                 $('#your-number').text(thisRoll);
-                setTimeout( () => {
-                    updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'red'});
-                }, 500);
+                cssColor = {'color' : 'red'}
             }
 
             else {
                 thisRoll = Math.floor(Math.random() * (rollUnder - 1) + 1);
                 
                 $('#your-number').text(thisRoll);
-
-                setTimeout( () => {
-                    updateTicker(onRoll, totalRolls, currentProfit, {'color' : 'green'});
-                }, 500); 
+                cssColor = {'color' : 'green'};
             }
+            // update ticker and re-enable button
+            setTimeout( () => {
+
+                    updateTicker(onRoll, totalRolls, currentProfit, cssColor);
+
+                    if(onRoll < totalRolls) $('#roll-dice').removeClass('disabled');
+                    
+                    $('#roll-dice').click( () => {InfinityDice.rollDice()} );
+
+                }, 500);
+
              // enable the ROLL button once the roll has resolved.
-             $('#roll-dice').removeClass('disabled');
-             $('#roll-dice').click( () => {InfinityDice.rollDice()} );
+             
             checkGameStatus(onRoll, totalRolls, currentProfit, betPerRoll);
         }
     }
