@@ -103,15 +103,15 @@ MoonMissionSlots = {
                         launchWrongNetworkModal('Moon Mission Slots');
                         return;
                     }
+                    else {
+                        return MoonMissionSlots.initContract(web3);
+                    }
                 });
             }
             else {
                 launchNoMetaMaskModal('Moon Mission Slots');
                 return;
             }
-
-            return MoonMissionSlots.initContract(web3);
-
         }, 500);
     },
 
@@ -418,11 +418,11 @@ MoonMissionSlots = {
     animatePayment: function(){
         var winningsMultiple = 0;
 
-        if (MoonMissionSlots.dial1Type === 0 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 2){
-            winningsMultiple = 10000;
+        if (MoonMissionSlots.dial1Type === 2 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 0){
+            winningsMultiple = 5000;
         }
         else if (MoonMissionSlots.dial1Type === 0 && MoonMissionSlots.dial2Type === 0 && MoonMissionSlots.dial3Type === 0){
-            winningsMultiple = 1500;
+            winningsMultiple = 1777;
         }
         else if (MoonMissionSlots.dial1Type === 1 && MoonMissionSlots.dial2Type === 1 && MoonMissionSlots.dial3Type === 1){
             winningsMultiple = 250;
@@ -430,11 +430,11 @@ MoonMissionSlots = {
         else if (MoonMissionSlots.dial1Type === 2 && MoonMissionSlots.dial2Type === 2 && MoonMissionSlots.dial3Type === 2){
             winningsMultiple = 250;
         }
-        else if (MoonMissionSlots.dial1Type >= 0 && MoonMissionSlots.dial1Type <= 2 && MoonMissionSlots.dial2Type >= 0 && MoonMissionSlots.dial2Type <= 2 && MoonMissionSlots.dial3Type >= 0 && MoonMissionSlots.dial3Type <= 3){
-            winningsMultiple = 90;
+        else if (MoonMissionSlots.dial1Type >= 0 && MoonMissionSlots.dial1Type <= 2 && MoonMissionSlots.dial2Type >= 0 && MoonMissionSlots.dial2Type <= 2 && MoonMissionSlots.dial3Type >= 0 && MoonMissionSlots.dial3Type <= 2){
+            winningsMultiple = 95;
         }
         else if (MoonMissionSlots.dial1Type === 5 && MoonMissionSlots.dial1Type === 4 && MoonMissionSlots.dial3Type === 3){
-            winningsMultiple = 100;
+            winningsMultiple = 90;
         }
         else if (MoonMissionSlots.dial1Type === 3 && MoonMissionSlots.dial2Type === 3 && MoonMissionSlots.dial3Type === 3){
             winningsMultiple = 50;

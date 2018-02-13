@@ -79,15 +79,15 @@ InfinityBankroll = {
                         launchWrongNetworkModal('Infinity Bankroll');
                         return;
                     }
+                    else {
+                        return InfinityBankroll.initContract(web3);
+                    }
                 });
             }
             else {
                 launchNoMetaMaskModal('Infinity Bankroll');
                 return;
             }
-
-            return InfinityBankroll.initContract(web3);
-
         }, 500);
     },
 
