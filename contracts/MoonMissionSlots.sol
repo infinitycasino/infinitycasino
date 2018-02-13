@@ -567,18 +567,19 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				
 				// payouts (still labelled)
 
+				// start the payouts for this wheel spin block
 				// bronze ether -> silver ether -> gold ether 
-				if (dial1 == 2 && dial2 == 1 && dial3 == 0)			{ payout += 10000; } // JACKPOT!!!!!!
+				if (dial1 == 2 && dial2 == 1 && dial3 == 0)			{ payout += 5000; } // JACKPOT!!!!!!
 				// all gold ether
-				else if (dial1 == 0 && dial2 == 0 && dial3 == 0) 	{ payout += 1500; }
+				else if (dial1 == 0 && dial2 == 0 && dial3 == 0) 	{ payout += 1777; }
 				// all silver ether 
 				else if (dial1 == 1 && dial2 == 1 && dial3 == 1)	{ payout += 250; }
 				// all bronze ether
 				else if (dial1 == 2 && dial2 == 2 && dial3 == 2)	{ payout += 250; }
 				// all some type of ether
-				else if (dial1 >= 0 && dial1 <= 2 && dial2 >= 0 && dial2 <= 2 && dial3 >= 0 && dial3 <= 2)	{ payout += 90; }	// any ether, variable payout to adjust house edge. MAX == 100, DEFAULT == 90
+				else if (dial1 >= 0 && dial1 <= 2 && dial2 >= 0 && dial2 <= 2 && dial3 >= 0 && dial3 <= 2)	{ payout += 95; }
 				// bronze planet -> silver planet -> gold planet
-				else if (dial1 == 5 && dial2 == 4 && dial3 == 3) 	{ payout += 100; }
+				else if (dial1 == 5 && dial2 == 4 && dial3 == 3) 	{ payout += 90; }
 				// all gold planet
 				else if (dial1 == 3 && dial2 == 3 && dial3 == 3)	{ payout += 50; }
 				// all silver planet
@@ -595,7 +596,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				// any three planet type 
 				else if (dial1 >= 3 && dial1 <= 5 && dial2 >= 3 && dial2 <= 5 && dial3 >=3 && dial3 <= 5)	{ payout += 3; }
 				// any three gold
-				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 && dial2 == 3) && (dial3 == 0 || dial3 == 3)) { payout += 3; }
+				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 || dial2 == 3) && (dial3 == 0 || dial3 == 3)) { payout += 3; }
 				// any three silver
 				else if ((dial1 == 1 || dial1 == 4) && (dial2 == 1 || dial2 == 4) && (dial3 == 1 || dial3 == 4)) { payout += 2; }
 				// any three bronze 
