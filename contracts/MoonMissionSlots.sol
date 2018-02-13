@@ -326,7 +326,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				// any three planet type 
 				else if (dial1 >= 3 && dial1 <= 5 && dial2 >= 3 && dial2 <= 5 && dial3 >=3 && dial3 <= 5)	{ payout += 3; }
 				// any three gold
-				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 && dial2 == 3) && (dial3 == 0 || dial3 == 3)) { payout += 3; }
+				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 || dial2 == 3) && (dial3 == 0 || dial3 == 3)) { payout += 3; }
 				// any three silver
 				else if ((dial1 == 1 || dial1 == 4) && (dial2 == 1 || dial2 == 4) && (dial3 == 1 || dial3 == 4)) { payout += 2; }
 				// any three bronze 
