@@ -533,15 +533,14 @@ function initUI(){
 
     //number spins slider
     $('#number-spins').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 0,
         max: spinCountValues.length - 1,
-        value: 9,
-        create: function(){
-            $('#number-spins-slider-handle').text(spinCountValues[$(this).slider("value")]);
-        },
-        slide: function(event, ui){
-            $('#number-spins-slider-handle').text(spinCountValues[ui.value].toString());
-        }
+        value: 9
+        // create: ,
+        // slide: refreshSliderColor,
+        // change: refreshSliderColor
     });
 
     // max and min buttons
