@@ -537,10 +537,10 @@ function initUI(){
         range: "min",
         min: 0,
         max: spinCountValues.length - 1,
-        value: 9
-        // create: ,
-        // slide: refreshSliderColor,
-        // change: refreshSliderColor
+        value: 9,
+        slide: function(event, ui){
+            $("#current-number-spins").text(spinCountValues[ui.value]);
+        }
     });
 
     // max and min buttons

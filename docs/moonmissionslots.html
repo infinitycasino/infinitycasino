@@ -79,34 +79,26 @@
 		<div id="modal-div"></div>
 
 
-		<section id="splash-screen">
-			<div class="container-fluid slots-splash-screen">
-				<div class="container">
-					<div class="row" style="padding-top: 3em; padding-bottom: 1em;">
-						<div class="col-sm-9">
+		<section id="splash-screen" style="margin-top: 3.5em;">
+				<img class="img-fluid" src='/img/slots-background-splash.png'>
+						
+						<!-- <div class="col-sm-3">
+							<text id="amt-wagered">0</text>
 							<br />
-							<h1 class="slots-text-title">BIGGEST JACKPOTS ON THE BLOCKCHAIN.</h1>
-						</div>
-						<div class="col-sm-3">
-							<text class="stats" id="amt-wagered">0</text>
+							<label>Ether Has Been Wagered</label>
 							<br />
-							<label class="stats-text">Ether Has Been Wagered</label>
+							<text id="games-played">0</text>
 							<br />
-							<text class="stats" id="games-played">0</text>
+							<label>Games Have Been Played</label>
 							<br />
-							<label class="stats-text">Games Have Been Played</label>
+							<text  id="max-bet">0</text>
 							<br />
-							<text class="stats" id="max-bet">0</text>
+							<label>Max Bet</label>
 							<br />
-							<label class="stats-text">Max Bet</label>
+							<text id="min-bet">0</text>
 							<br />
-							<text class="stats" id="min-bet">0</text>
-							<br />
-							<label class="stats-text">Min Bet</label>
-						</div>
-					</div> <!-- /.row -->
-				</div> <!-- /.container -->
-			</div> <!-- /.container-fluid -->
+							<label>Min Bet</label>
+						</div> -->
 		</section>
 
 		<div class="container-fluid slots-screen">
@@ -121,7 +113,18 @@
 						<label class="slots-text">NUMBER OF SPINS</label>
 
 						<!-- init as jquery ui slider -->
-						<div id="number-spins"></div>
+						<!-- <div class="container-fluid"> -->
+							<div class="row">
+								<div class="col-11">
+								<span>
+									<div id="number-spins"></div>
+								</div>
+								<div class="col-1">
+									<text id="current-number-spins">10</text>
+								</span>
+								</div>
+							</div>
+						<!-- </div> -->
 
 						<br />
 						<label class="slots-text">BET PER SPIN</label>
@@ -131,7 +134,7 @@
 								<button class="btn bet-buttons" id="half-bet-per-spin" type="button">1/2x</button>
 							</div>
 							&nbsp;
-							<input class="form-control" style="border-radius: 5px;" id="bet-per-spin" value="0.001">
+							<input class="form-control" id="bet-per-spin" value="0.001">
 							&nbsp;
 							<div class="input-group-btn">
 								<button class="btn bet-buttons" id="double-bet-per-spin" type="button">2x</button>

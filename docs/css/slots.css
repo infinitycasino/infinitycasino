@@ -1,22 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 @import url('https://fonts.googleapis.com/css?family=Monoton');
 
-.slots-splash-screen {
-	background-color: #333333;
-	padding-top: 1em;
-	z-index: 1;
+.col-centered{
+  float: none;
+  margin: 0 auto;
 }
-.slots-text-title{
-	font-size: 130%;
-	color: #FFFFFF;
-}
-.stats {
-  font-size: 100%;
-  color: #FFFFFF;
-}
-.stats-text{
-  	color: #FFFFFF;
-}
+
 .slots-screen{
 	background-image: url('/img/slots-background.png');
   background-repeat: no-repeat;
@@ -24,13 +13,97 @@
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-	height: 90vh;
+	height: 92.5vh;
 }
+
+/*place bets box css*/
+
+#place-bets{
+  background-image: url('/img/slots-buy-spins-frame.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  color: white;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 40px;
+  padding-bottom: 50px;
+}
+
+#number-spins .ui-slider-handle {
+  width: 1.5em;
+  height: 1.5em;
+  top: -5px;
+  background-color: #bcbcbc;
+  border-radius: 50%;
+}
+
+#number-spins .ui-slider-range { 
+  background: #FFFFFF;
+  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
+}
+
+#number-spins{
+  background: #5e5e5e;
+}
+
+#buy-credits {
+  background: #09d602;
+  box-shadow: 0 0 10px rgba(66, 226, 244, 0.9);
+  color: white;
+  letter-spacing: 12px;
+  border-radius: 0px;
+}
+
+.buy-spins-title{
+  letter-spacing: 16px;
+  text-shadow: 0 0 8px white;
+}
+
+@media (max-width: 576px){
+  .buy-spins-title{
+    letter-spacing: 8px;
+  }
+}
+
+.slots-text{
+  text-shadow: 0 0 2px white;
+  letter-spacing: 4px;
+}
+
+.bet-buttons{
+  background: linear-gradient(#D8D8D8, #979797);
+  color: white;
+  text-shadow: 0 0 1px white;
+  border-radius: 0px;
+}
+
+#current-number-spins{
+  text-shadow: 0 0 5px #D6FFEE;
+  font-weight: 100;
+  font-size: 150%;
+  text-align: right;
+  position: relative;
+  bottom: 15px;
+  right: 10px;
+}
+
+#bet-per-spin{
+  color: white;
+  text-align: center;
+  letter-spacing: 2px;
+  background-color: #5e5e5e;
+  border-radius: 0px;
+  text-shadow: 0 0 2px #D6FFEE;
+  font-size: 100%;
+}
+
+/*slots machine css*/
+
 .slots-machine{
   align-content: center;
 }
 
-/*SLOTS CSS*/
 .dial {
   border-radius: 10px;
   position: relative;
@@ -52,6 +125,7 @@
   margin-left: -0.9em;
 }
 
+/*media queries deal with the slots machine, buy spins box */
 
 @media (min-width: 0px){
   .dial-container{
@@ -67,6 +141,17 @@
   .spins-remaining, .total-profit{
     font-size: 60%;
     padding-left: 4em;
+  }
+  #current-number-spins{
+    left: 67vw;
+    bottom: 26px;
+  }
+}
+@media (min-width: 460px){
+  #current-number-spins{
+    left: 0;
+    bottom: 15px;
+    right: 10px;
   }
 }
 @media (min-width: 576px){
@@ -182,61 +267,4 @@
   color: #00d936;
   font-size: 600%;
   z-index: 10;
-}
-
-#place-bets{
-  background-image: url('/img/slots-buy-spins-frame.png');
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-
-  color: white;
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-top: 40px;
-  padding-bottom: 50px;
-}
-
-#number-spins .ui-slider-handle {
-  width: 1.5em;
-  height: 1.5em;
-  background-color: #bcbcbc;
-  border-radius: 50%;
-}
-
-#number-spins .ui-slider-range { 
-  background: #FFFFFF;
-  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
-}
-
-#number-spins{
-  background: #5e5e5e;
-}
-
-#buy-credits {
-  background: #09d602;
-  box-shadow: 0 0 10px rgba(66, 226, 244, 0.9);
-  color: white;
-  letter-spacing: 12px;
-}
-
-.buy-spins-title{
-  letter-spacing: 16px;
-  text-shadow: 0 0 8px white;
-}
-
-@media (max-width: 576px){
-  .buy-spins-title{
-    letter-spacing: 8px;
-  }
-}
-
-.slots-text{
-  text-shadow: 0 0 2px white;
-  letter-spacing: 8px;
-}
-
-.bet-buttons{
-  background: linear-gradient(#D8D8D8, #979797);
-  color: white;
-  text-shadow: 0 0 1px white;
 }
