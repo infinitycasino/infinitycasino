@@ -80,12 +80,9 @@
 
 #current-number-spins{
   text-shadow: 0 0 5px #D6FFEE;
-  font-weight: 100;
   font-size: 150%;
   text-align: right;
   position: relative;
-  bottom: 15px;
-  right: 10px;
 }
 
 #bet-per-spin{
@@ -96,6 +93,18 @@
   border-radius: 0px;
   text-shadow: 0 0 2px #D6FFEE;
   font-size: 100%;
+}
+
+/*footer css*/
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
+  line-height: 40px; /* Vertically center the text there */
+  background-color: #f5f5f5;
 }
 
 /*slots machine css*/
@@ -149,9 +158,11 @@
 }
 @media (min-width: 460px){
   #current-number-spins{
-    left: 0;
-    bottom: 15px;
-    right: 10px;
+    left: 0px;
+    bottom: -8px;
+    right: 40px;
+    position: absolute;
+    
   }
 }
 @media (min-width: 576px){
