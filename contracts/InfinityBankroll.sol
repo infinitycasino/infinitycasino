@@ -346,7 +346,8 @@ contract InfinityBankroll is ERC20 {
 	function transfer(address _to, uint256 _value) public returns (bool success){
 		if (balances[msg.sender] >= _value 
 			&& _value > 0 
-			&& contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp){
+			&& contributionTime[msg.sender] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
+			&& _to != address(this)){
 
 			// safely subtract
 			balances[msg.sender] = SafeMath.sub(balances[msg.sender], _value);
@@ -354,6 +355,7 @@ contract InfinityBankroll is ERC20 {
 
 			// log event 
 			Transfer(msg.sender, _to, _value);
+			return true;
 		}
 		else {
 			return false;
@@ -364,7 +366,8 @@ contract InfinityBankroll is ERC20 {
 		if (allowed[_from][msg.sender] >= _value 
 			&& balances[_from] >= _value 
 			&& _value > 0 
-			&& contributionTime[_from] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp){
+			&& contributionTime[_from] + WAITTIMEUNTILWITHDRAWORTRANSFER <= block.timestamp
+			&& _to != address(this)){
 
 			// safely add to _to and subtract from _from, and subtract from allowed balances.
 			balances[_to] = SafeMath.add(balances[_to], _value);
