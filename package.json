@@ -34,6 +34,6 @@
     "solidity-coverage": "^0.4.9"
   },
   "dependencies": {
-    "npm": "^5.6.0",
+    "npm": "^5.6.0"
   }
 }
