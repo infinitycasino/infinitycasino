@@ -7,19 +7,33 @@
     "test": "test"
   },
   "scripts": {
+    "node": "testrpc -m 'infinitycasino' -l 8000000 -a 100",
     "dev": "lite-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "truffle test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://infinitycasino@bitbucket.org/infinitycasino/infinitycasino_deployment1.git"
+    "url": "git+https://infinitycasino@github.com/infinitycasino/infinitycasino"
   },
   "keywords": [
     "casino",
     "ethereum",
-    "smart-contracts"
+    "smart-contracts",
+    "solidity",
+    "ether",
+    "slots",
+    "dice",
+    "roulette"
   ],
-  "author": "A@INFINITYCASINO.IO",
-  "license": "SEE LICENSE IN README.txt",
-  "homepage": "https://bitbucket.org/infinitycasino/infinitycasino_deployment1#readme"
+  "author": "development@INFINITYCASINO.IO",
+  "license": "",
+  "homepage": "http://infinitycasino.io",
+  "devDependencies": {
+    "ethereumjs-testrpc": "^6.0.3",
+    "truffle": "^4.0.6",
+    "solidity-coverage": "^0.4.9"
+  },
+  "dependencies": {
+    "npm": "^5.6.0",
+  }
 }
