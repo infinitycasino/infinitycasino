@@ -83,6 +83,7 @@
   font-size: 150%;
   text-align: right;
   position: relative;
+  bottom: 15px;
 }
 
 #bet-per-spin{
@@ -151,19 +152,6 @@
     font-size: 60%;
     padding-left: 4em;
   }
-  #current-number-spins{
-    left: 67vw;
-    bottom: 26px;
-  }
-}
-@media (min-width: 460px){
-  #current-number-spins{
-    left: 0px;
-    bottom: -8px;
-    right: 40px;
-    position: absolute;
-    
-  }
 }
 @media (min-width: 576px){
   .dial-container{
@@ -217,41 +205,41 @@
   }
   .spins-remaining{
     text-align: left;
-    font-size: 100%;
+    font-size: 80%;
     padding-left: 5.5em;
   }
   .total-profit{
     text-align: right; 
-    font-size: 100%;
+    font-size: 80%;
     padding-right: 4em;
   }
 }
 @media (min-width: 1200px){
   .dial-container{
-    margin-top: -400px
+    margin-top: -380px
   }
   .dial-slot {
-    height: 200px;
-    width: 200px;
+    height: 190px;
+    width: 190px;
   }
   .dial {
-    height: 600px;
+    height: 570px;
   }
   .spins-remaining{
     text-align: left;
-    font-size: 120%;
+    font-size: 100%;
     padding-left: 5.5em;
   }
   .total-profit{
     text-align: right; 
-    font-size: 120%;
+    font-size: 100%;
     padding-right: 5em;
   }
 }
 
 .spin-wheel-text{
   font-size: 300%;
-  font-family: 'Monoton', cursive;
+  font-family: 'Raleway', sans-serif;
   letter-spacing: 8px;
 }
 .spin-wheel{

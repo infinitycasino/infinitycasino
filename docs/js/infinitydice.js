@@ -348,14 +348,16 @@ function initUI(){
     
     //number rolls slider
     $('#number-rolls').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 0,
         max: rollCountValues.length - 1,
         value: 9,
         create: function(){
-            $('#number-rolls-slider-handle').text(rollCountValues[$(this).slider("value")]);
+            $('#current-number-rolls').text(rollCountValues[$(this).slider("value")]);
         },
         slide: function(event, ui){
-            $('#number-rolls-slider-handle').text(rollCountValues[ui.value].toString());
+            $('#current-number-rolls').text(rollCountValues[ui.value].toString());
             updateGuaranteedRollsSlider_withUIInput(ui);
         }
     });
@@ -408,14 +410,16 @@ function initUI(){
 
     // roll under slider
     $('#roll-under').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 2,
         max: 99,
         value: 50,
         create: function(){
-            $('#roll-under-slider-handle').text($(this).slider("value"));
+            $('#current-roll-under').text($(this).slider("value"));
         },
         slide: function(event, ui){
-            $('#roll-under-slider-handle').text(ui.value);
+            $('#current-roll-under').text(ui.value);
 
             var maxBet = InfinityDice.calculateMaxBet(parseFloat(ui.value));
 
@@ -429,14 +433,16 @@ function initUI(){
     });
 
     $('#guaranteed-rolls').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 1,
         max: 10,
         value: 10,
         create: function(){
-            $('#guaranteed-rolls-slider-handle').text($(this).slider("value"));
+            $('#current-guaranteed-rolls').text($(this).slider("value"));
         },
         slide: function(event, ui){
-            $('#guaranteed-rolls-slider-handle').text(ui.value);
+            $('#current-guaranteed-rolls').text(ui.value);
         },
     })
 
@@ -461,7 +467,7 @@ function numberRollsValue(){
 
 function insertProfitPerRoll(rollUnderValue){
     var profit = InfinityDice.calculateProfit( parseFloat($('#bet-per-roll').val()), rollUnderValue );
-    $('#your-profit-per-roll').html(profit.toString().slice(0,4) + 'x');
+    $('#current-profit-per-roll').html(profit.toString().slice(0,4) + 'x');
 }
 
 function updateGuaranteedRollsSlider_withUIInput(ui){
@@ -499,7 +505,7 @@ function updateGuaranteedRollsSlider(numberRolls){
             }
         }
 
-        $('#guaranteed-rolls-slider-handle').text($('#guaranteed-rolls').slider('option', 'value'));
+        $('#current-guaranteed-rolls').text($('#guaranteed-rolls').slider('option', 'value'));
     }
 }
 
@@ -550,14 +556,14 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
                 thisRoll = Math.floor(Math.random() * (100 - rollUnder) + (rollUnder + 1));
 
                 $('#your-number').text(thisRoll);
-                cssColor = {'color' : 'red'}
+                cssColor = {'color' : '#ff1919'}
             }
 
             else {
                 thisRoll = Math.floor(Math.random() * (rollUnder - 1) + 1);
                 
                 $('#your-number').text(thisRoll);
-                cssColor = {'color' : 'green'};
+                cssColor = {'color' : '#09d602'};
             }
             // update ticker and re-enable button
             setTimeout( () => {
@@ -582,19 +588,13 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
 // purely a helper function for rolling dice to increment the ticker values.
 function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
     // increment the roll number color: white -> cssColor -> white
-    $('#max-rolls').css(cssColor);
+    $('.in-game-stats').css(cssColor);
+
     $('#max-rolls').text(onRoll.toString() + '/' + totalRolls.toString());
-
-    setTimeout( () => {
-        $('#max-rolls').css({'color' : 'white'});
-    }, 500);
-
-    // change total profit, color white -> cssColor -> white
-    $('#current-profit').css(cssColor);
     $('#current-profit').text(web3.fromWei(currentProfit, "ether").slice(0,8));
 
     setTimeout( () => {
-        $('#current-profit').css({'color' : 'white'});
+        $('.in-game-stats').css({'color' : 'white'});
     }, 500);
 }
 

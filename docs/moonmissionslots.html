@@ -86,6 +86,7 @@
 
 				<div class="row justify-content-center">
 
+					<!-- place bets block -->
 					<div id="place-bets" class="col-lg-6 col-md-8 col-sm-10">
 						<h1 class="buy-spins-title">BUY SPINS</h1>
 						<br />
@@ -93,18 +94,14 @@
 						<label class="slots-text">NUMBER OF SPINS</label>
 
 						<!-- init as jquery ui slider -->
-						<!-- <div class="container-fluid"> -->
-							<div class="row">
-								<div class="col-11">
-								<span>
-									<div id="number-spins"></div>
-								</div>
-								<div class="col-1">
-									<text id="current-number-spins">10</text>
-								</span>
-								</div>
+						<div class="row">
+							<div class="col-10">
+								<div id="number-spins"></div>
 							</div>
-						<!-- </div> -->
+							<div class="col-2">
+								<text id="current-number-spins">10</text>
+							</div>
+						</div>
 
 						<br />
 						<label class="slots-text">BET PER SPIN</label>
@@ -124,8 +121,9 @@
 						<br />
 						<button id="buy-credits" class="btn btn-block">BUY CREDITS</button>
 					</div>
-					
-					<div id="spin-bets" class="col-12" style="display: none;">
+
+					<!-- slot machine block -->
+					<div id="spin-bets" class="col-12" style="display:none;">
 						<br />
 						<h5>
 							<div class="row" style="color: white;">
