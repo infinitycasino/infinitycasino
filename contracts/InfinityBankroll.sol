@@ -84,6 +84,9 @@ contract InfinityBankroll is ERC20 {
 		balances[msg.sender] = initialTokens;
 		totalSupply += initialTokens;
 
+		// log a mint tokens event
+		Transfer(0x0, msg.sender, initialTokens);
+
 		// insert given game addresses into the TRUSTEDADDRESSES[] array
 		TRUSTEDADDRESSES[0] = dice;
 		TRUSTEDADDRESSES[1] = slots;
@@ -168,8 +171,11 @@ contract InfinityBankroll is ERC20 {
 			msg.sender.transfer(ifContributionTakesBankrollOverLimit_Refund);
 		}
 
-		// log an event
+		// log an event about funding bankroll
 		FundBankroll(msg.sender, contributedEther, creditedTokens);
+
+		// log a mint tokens event
+		Transfer(0x0, msg.sender, initialTokens);
 	}
 
 	function cashoutINFSTokens(uint256 _amountTokens) public {
@@ -217,8 +223,11 @@ contract InfinityBankroll is ERC20 {
 		// lastly, transfer the ether back to the bankroller. Thanks for your contribution!
 		msg.sender.transfer(contributorAmount);
 
-		// log an event
+		// log an event about cashout
 		CashOut(msg.sender, contributorAmount, _amountTokens);
+
+		// log a destroy tokens event
+		Transfer(msg.sender, 0x0, _amountTokens);
 	}
 
 	////////////////////
