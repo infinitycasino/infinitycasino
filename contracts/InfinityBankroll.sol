@@ -3,11 +3,17 @@ pragma solidity ^0.4.18;
 import "./SafeMath.sol";
 
 contract InfinityCasinoGameInterface {
-	uint256 public BANKROLL;
 	uint256 public DEVELOPERSFUND;
-	function acceptEtherFromBankrollContract() payable public;
-	function payEtherToBankrollContract(uint256 amountToSend) public;
+	uint256 public LIABILITIES;
 	function payDevelopersFund(address developer) public;
+	function receivePaymentForOraclize() payable public;
+}
+
+contract InfinityCasinoBankrollInterface {
+	uint256 public BANKROLL;
+	function payEtherToWinner(uint256 amtEther, address winner) public;
+	function receiveEtherFromGameAddress() payable public;
+	function payOraclize(uint256 amountToPay) public;
 }
 
 contract ERC20 {
@@ -21,7 +27,7 @@ contract ERC20 {
 	event Approval(address indexed _owner, address indexed _spender, uint _value);
 }
 
-contract InfinityBankroll is ERC20 {
+contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 
 	using SafeMath for *;
 
@@ -52,10 +58,6 @@ contract InfinityBankroll is ERC20 {
 	// mapping to store tokens
 	mapping(address => uint256) balances;
 	mapping(address => mapping(address => uint256)) allowed;
-
-	/////////////////
-	// CONTRACT LOGIC
-	/////////////////
 
 	// events
 	event FundBankroll(address contributor, uint256 etherContributed, uint256 tokensReceived);
@@ -123,6 +125,11 @@ contract InfinityBankroll is ERC20 {
 	function receiveEtherFromGameAddress() payable public addressInTrustedAddresses(msg.sender) {
 		// this function will get called from the game contracts when someone starts a game.
 		BANKROLL = SafeMath.add(BANKROLL, msg.value);
+	}
+
+	function payOraclize(uint256 amountToPay) public addressInTrustedAddresses(msg.sender) {
+		// this function will get called when a game contract must pay payOraclize
+		InfinityCasinoGameInterface(msg.sender).receivePaymentForOraclize.value(amountToPay)();
 	}
 
 	///////////////////////////////////////////////
