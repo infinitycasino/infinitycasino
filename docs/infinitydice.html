@@ -11,6 +11,7 @@
 	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 		<link rel="stylesheet" href="css/dice.css">
+		<link rel="stylesheet" href="css/games.css">
 		<link rel="stylesheet" href="css/homepage.css">
 
 	</head>
@@ -79,7 +80,7 @@
 		</section>
 
 		<section id="dice">
-			<div class="container-fluid dice-screen">
+			<div class="container-fluid dice-screen main-screen">
 				<div class="container">
 					<div class="row justify-content-center">
 						<!-- place bets block -->
@@ -95,10 +96,10 @@
 							<!-- init as jquery ui slider -->
 							<div class="row">
 								<div class="col-10">
-									<div id="number-rolls" class="dice-slider"></div>
+									<div id="number-rolls" class="game-slider"></div>
 								</div>
 								<div class="col-2">
-									<text id="current-number-rolls" class="dice-slider-text">10</text>
+									<text id="current-number-rolls" class="game-slider-text">10</text>
 								</div>
 							</div>
 
@@ -112,7 +113,7 @@
 									<button class="btn bet-buttons" id="half-bet-per-roll" type="button">1/2x</button>
 								</span>
 								&nbsp;
-								<input type="text" class="form-control" id="bet-per-roll" value="0.5">
+								<input type="text" class="form-control bet-per-play" id="bet-per-roll" value="0.25">
 								&nbsp;
 								<span class="input-group-btn">
 									<button class="btn bet-buttons" id="double-bet-per-roll" type="button">2x</button>
@@ -127,10 +128,10 @@
 							<!-- init as jquery ui slider -->
 							<div class="row">
 								<div class="col-10">
-									<div id="roll-under" class="dice-slider"></div>
+									<div id="roll-under" class="game-slider"></div>
 								</div>
 								<div class="col-2">
-									<text id="current-roll-under" class="dice-slider-text">50</text>
+									<text id="current-roll-under" class="game-slider-text">50</text>
 								</div>
 							</div>
 
@@ -141,10 +142,10 @@
 							<!-- init as jquery ui slider -->
 							<div class="row">
 								<div class="col-10">
-									<div id="guaranteed-rolls" class="dice-slider"></div>
+									<div id="guaranteed-rolls" class="game-slider"></div>
 								</div>
 								<div class="col-2">
-									<text id="current-guaranteed-rolls" class="dice-slider-text">10</text>
+									<text id="current-guaranteed-rolls" class="game-slider-text">10</text>
 								</div>
 							</div>
 
@@ -159,7 +160,7 @@
 								</div>
 							</div>
 
-							<button class="btn btn-block" id="buy-rolls">BUY ROLLS</button>
+							<button class="btn btn-block buy-button" id="buy-rolls">BUY ROLLS</button>
 						</div>
 						
 						<!-- roll block, no display initially -->
@@ -177,7 +178,7 @@
 							<div id="your-number" class="your-number">0</div>
 							<br />
 							<div class="row justify-content-center" style="margin-right:0.5em;">
-								<button class="btn btn-block" id="roll-dice"><text style="margin-left:0.5em;" id="roll-dice-text">ROLL</text></button>
+								<button class="btn btn-block play-game-button" id="roll-dice"><text class="play-game-button-text">ROLL</text></button>
 							</div>
 							<br />
 						</div>
@@ -188,21 +189,51 @@
 			
 		</div>
 
-		<!-- <text class="stats" id="amt-wagered">0</text>
-		<br />
-		<label class="stats-text">Ether Has Been Wagered</label>
-		<br />
-		<text class="stats" id="games-played">0</text>
-		<br />
-		<label class="stats-text">Games Have Been Played</label>
-		<br />
-		<text class="stats" id="max-win">0</text>
-		<br />
-		<label class="stats-text">Ether Can be Won Per Roll</label>
-		<br />
-		<text class="stats" id="min-bet">0m</text>
-		<br />
-		<label class="stats-text">Min Bet</label> -->
+		<footer class="footer" style="background: black; color: white;">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col col-centered" style="text-align: center;">
+						<text id="amt-wagered">0</text>
+						<text>Ether Wagered</text>
+					</div>
+					<div class="col col-centered" style="text-align: center;">
+						<text id="games-played">0</text>
+						<text>Games Played</text>
+					</div>
+					<div class="col col-centered" style="text-align: center; top: 2.5px;">
+						<button class="bet-buttons btn-block" data-toggle="modal" data-target="#paytableModal" style="height: 35px; line-height: 20px;">HOW TO PLAY</button>
+					</div>
+					<div class="col col-centered" style="text-align: center;">
+						<text  id="max-win">0</text>
+						<text>Max Win</text>
+					</div>
+					<div class="col col-centered" style="text-align: center;">
+						<text id="min-bet">0</text>
+						<text>Min Bet</text>
+					</div>
+				</div>
+		</footer>
+
+		<!-- pay table modal -->
+		<div class="modal fade" id="paytableModal" tabindex="-1" role="dialog" aria-labelledby="paytableModalLabel" aria-hidden="true" style="z-index: 2000;">
+			<div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 82.5vmin;">
+				<div class="modal-content" style="opacity:0.95; background-color:grey; color:white;">
+					<div class="modal-header">
+						How to play Infinity Dice
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    						<span aria-hidden="true">&times;</span>
+   						</button>
+					</div>
+					<div class="modal-body">
+						
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" style="background-color:black;" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>

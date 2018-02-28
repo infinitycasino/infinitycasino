@@ -8,12 +8,6 @@
 
 .slots-screen{
 	background-image: url('/img/slots-background.png');
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-	height: 92.5vh;
 }
 
 /*place bets box css*/
@@ -30,80 +24,14 @@
   padding-bottom: 50px;
 }
 
-#number-spins .ui-slider-handle {
-  width: 1.5em;
-  height: 1.5em;
-  top: -5px;
-  background-color: #bcbcbc;
-  border-radius: 50%;
-}
-
-#number-spins .ui-slider-range { 
-  background: #FFFFFF;
-  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
-}
-
-#number-spins{
-  background: #5e5e5e;
-}
-
-#buy-credits {
-  background: #09d602;
-  box-shadow: 0 0 10px rgba(66, 226, 244, 0.9);
-  color: white;
-  letter-spacing: 12px;
-  border-radius: 0px;
-}
-
-.buy-spins-title{
-  letter-spacing: 16px;
-  text-shadow: 0 0 8px white;
-}
-
-@media (max-width: 576px){
-  .buy-spins-title{
-    letter-spacing: 8px;
-  }
-}
-
-.slots-text{
-  text-shadow: 0 0 2px white;
-  letter-spacing: 4px;
-}
-
-.bet-buttons{
-  background: linear-gradient(#D8D8D8, #979797);
-  color: white;
-  text-shadow: 0 0 1px white;
-  border-radius: 0px;
-}
-
-#current-number-spins{
-  text-shadow: 0 0 5px #D6FFEE;
-  font-size: 150%;
-  text-align: right;
-  position: relative;
-  bottom: 15px;
-}
-
-#bet-per-spin{
-  color: white;
-  text-align: center;
-  letter-spacing: 2px;
-  background-color: #5e5e5e;
-  border-radius: 0px;
-  text-shadow: 0 0 2px #D6FFEE;
-  font-size: 100%;
-}
-
 /*footer css*/
 
 .footer {
-  position: fixed;
+  /*position: fixed;*/
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 40px;
+  /*height: 40px;*/
   line-height: 40px; /* Vertically center the text there */
   background-color: #f5f5f5;
 }
@@ -235,26 +163,6 @@
     font-size: 100%;
     padding-right: 5em;
   }
-}
-
-.spin-wheel-text{
-  font-size: 300%;
-  font-family: 'Raleway', sans-serif;
-  letter-spacing: 8px;
-}
-.spin-wheel{
-  background-color: rgb(66, 226, 244);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 0 30px rgba(66, 226, 244, 0.8);
-  width: 80%; 
-  margin-left: 1em;
-}
-.spin-wheel:hover, #buy-credits:hover{
-  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
-  text-shadow: 0 0 4px white;
-}
-.spin-wheel.disabled{
-  box-shadow: 0 0 0;
 }
 
 .score-pop {

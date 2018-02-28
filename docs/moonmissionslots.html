@@ -11,6 +11,7 @@
 	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 	    <link rel="stylesheet" href="css/slots.css">
+	    <link rel="stylesheet" href="css/games.css">
 		<link rel="stylesheet" href="css/homepage.css">
 
 	</head>
@@ -81,37 +82,37 @@
 				<img class="img-fluid" src='/img/slots-background-splash.png'>
 		</section>
 
-		<div class="container-fluid slots-screen">
+		<div class="container-fluid slots-screen main-screen">
 			<div class="container slots-machine">
 
 				<div class="row justify-content-center">
 
 					<!-- place bets block -->
 					<div id="place-bets" class="col-lg-6 col-md-8 col-sm-10">
-						<h1 class="buy-spins-title">BUY SPINS</h1>
+						<h1 class="buy-box-title">BUY SPINS</h1>
 						<br />
 						<div class="alert alert-info" id="game-info" style="display: none;"></div>
-						<label class="slots-text">NUMBER OF SPINS</label>
+						<label class="buy-box-text">NUMBER OF SPINS</label>
 
 						<!-- init as jquery ui slider -->
 						<div class="row">
 							<div class="col-10">
-								<div id="number-spins"></div>
+								<div id="number-spins" class="game-slider"></div>
 							</div>
 							<div class="col-2">
-								<text id="current-number-spins">10</text>
+								<text id="current-number-spins" class="game-slider-text">10</text>
 							</div>
 						</div>
 
 						<br />
-						<label class="slots-text">BET PER SPIN</label>
+						<label class="buy-box-text">BET PER SPIN</label>
 						<div class="input-group">
 							<div class="input-group-btn">
 								<button class="btn bet-buttons" id="min-bet-per-spin" type="button"><b>&darr;</b></button>
 								<button class="btn bet-buttons" id="half-bet-per-spin" type="button">1/2x</button>
 							</div>
 							&nbsp;
-							<input class="form-control" id="bet-per-spin" value="0.001">
+							<input type="text" class="form-control bet-per-play" id="bet-per-spin" value="0.001">
 							&nbsp;
 							<div class="input-group-btn">
 								<button class="btn bet-buttons" id="double-bet-per-spin" type="button">2x</button>
@@ -119,7 +120,7 @@
 							</div>
 						</div>
 						<br />
-						<button id="buy-credits" class="btn btn-block">BUY CREDITS</button>
+						<button class="btn btn-block buy-button" id="buy-credits">BUY CREDITS</button>
 					</div>
 
 					<!-- slot machine block -->
@@ -127,8 +128,8 @@
 						<br />
 						<h5>
 							<div class="row" style="color: white;">
-								<div class="col-md-6 slots-text spins-remaining">SPINS REMAINING: <text id="spins-remaining">0</text></div>
-								<div class="col-md-6 slots-text total-profit">TOTAL PROFIT: <text id="total-profit">0</text></div>
+								<div class="col-md-6 buy-box-text">SPINS REMAINING: <text id="spins-remaining">0</text></div>
+								<div class="col-md-6 buy-box-text">TOTAL PROFIT: <text id="total-profit">0</text></div>
 							</div>
 						</h5>
 						<div id="slot-machine" class="row justify-content-center">
@@ -356,7 +357,7 @@
 						</div> <!-- /#slot-machine .row-->
 						<br />
 						<div class="row justify-content-center">
-							<button class="btn btn-block spin-wheel" id="spin-wheel"><text class="spin-wheel-text">Spin</text></button>
+							<button class="btn btn-block play-game-button" id="spin-wheel"><text class="play-game-button-text">Spin</text></button>
 						</div>
 					</div> <!-- /.col -->
 				</div> <!-- /.row -->
@@ -366,7 +367,7 @@
 		</div>
 
 		<footer class="footer" style="background: black; color: white;">
-			<div class="container">
+			<div class="container-fluid">
 				<div class="row">
 					<div class="col col-centered" style="text-align: center;">
 						<text id="amt-wagered">0</text>
@@ -376,7 +377,7 @@
 						<text id="games-played">0</text>
 						<text>Games Played</text>
 					</div>
-					<div class="col col-centered" style="text-align: center; top: 2.5px">
+					<div class="col col-centered" style="text-align: center; top: 2.5px;">
 						<button class="bet-buttons btn-block" data-toggle="modal" data-target="#paytableModal" style="height: 35px; line-height: 20px;">PAYTABLE</button>
 					</div>
 					<div class="col col-centered" style="text-align: center;">

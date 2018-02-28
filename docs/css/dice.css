@@ -6,13 +6,6 @@
 }
 .dice-screen{
   background-image: url('/img/dice-background.png');
-  background-color: #333333;
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  height: 92.5vh;
 }
 #place-bets, #roll-bets{
   background-image: url('/img/dice-buy-rolls-frame.png');
@@ -24,89 +17,6 @@
   padding-right: 50px;
   padding-top: 50px;
   padding-bottom: 70px;
-}
-
-.buy-box-title{
-  letter-spacing: 16px;
-  text-shadow: 0 0 8px white;
-}
-@media (max-width: 768px){
-  .buy-box-title{
-    letter-spacing: 7px;
-  }
-}
-
-.buy-box-text{
-  text-shadow: 0 0 2px white;
-  letter-spacing: 4px;
-}
-
-.dice-slider .ui-slider-handle {
-  width: 1.5em;
-  height: 1.5em;
-  top: -5px;
-  background-color: #bcbcbc;
-  border-radius: 50%;
-}
-
-.dice-slider .ui-slider-range { 
-  background: #FFFFFF;
-  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
-}
-
-.dice-slider{
-  background: #5e5e5e;
-}
-
-.dice-slider-text{
-  text-shadow: 0 0 5px #D6FFEE;
-  font-size: 150%;
-  text-align: right;
-  position: relative;
-  bottom: 15px;
-}
-
-#bet-per-roll{
-  color: white;
-  text-align: center;
-  letter-spacing: 2px;
-  background-color: #5e5e5e;
-  border-radius: 0px;
-  text-shadow: 0 0 2px #D6FFEE;
-  font-size: 100%;
-}
-
-.bet-buttons{
-  background: linear-gradient(#D8D8D8, #979797);
-  color: white;
-  text-shadow: 0 0 1px white;
-  border-radius: 0px;
-}
-
-#buy-rolls {
-  background: #09d602;
-  box-shadow: 0 0 10px rgba(66, 226, 244, 0.9);
-  color: white;
-  letter-spacing: 12px;
-  border-radius: 0px;
-}
-#buy-rolls:hover{
-  box-shadow: 0 0 1px 4px rgba(66, 226, 244, 0.6);
-  text-shadow: 0 0 4px white;
-}
-
-#roll-dice-text{
-  font-size: 300%;
-  font-family: 'Raleway', sans-serif;
-  letter-spacing: 8px;
-}
-
-#roll-dice{
-  background-color: rgb(66, 226, 244);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 0 30px rgba(66, 226, 244, 0.8);
-  width: 80%; 
-  margin-left: 1em;
 }
 
 .lucky-number{
