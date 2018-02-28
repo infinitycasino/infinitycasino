@@ -40,6 +40,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	uint16 public MAXWIN_inTHOUSANDTHPERCENTS;
 
 	bool public GAMEPAUSED;
+	bool public REFUNDSACTIVE;
 
 	address public OWNER;
 
@@ -57,6 +58,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		AMOUNTPAIDOUT = 0;
 		DIALSSPUN = 0;
 		GAMEPAUSED = false;
+		REFUNDSACTIVE = true;
 
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is the max bet to avoid miner cheating. see python sim. on our github
@@ -131,6 +133,12 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		GAMEPAUSED = paused;
 	}
 
+	function setRefundsActive(bool active) public {
+		require(msg.sender == OWNER);
+
+		REFUNDSACTIVE = active;
+	}
+
 	function setMinBetForOraclize(uint256 minBet) public {
 		require(msg.sender == OWNER);
 
@@ -164,7 +172,8 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		require(block.timestamp - data.start >= ORACLIZEQUERYMAXTIME
 			&& (msg.sender == OWNER || msg.sender == data.player)
 			&& (!data.paidOut)
-			&& data.etherReceived <= LIABILITIES);
+			&& data.etherReceived <= LIABILITIES
+			&& REFUNDSACTIVE);
 
 		// set contract data
 		slotsData[oraclizeQueryId].paidOut = true;
@@ -408,19 +417,23 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		// if the proof has failed, immediately refund the player the original bet.
 		if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
 
-			// set contract data
-			slotsData[_queryId].paidOut = true;
+			if (REFUNDSACTIVE){
+				// set contract data
+				slotsData[_queryId].paidOut = true;
 
-			// subtract from liabilities and amount wagered, because this bet is being refunded.
-			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
-			AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
+				// subtract from liabilities and amount wagered, because this bet is being refunded.
+				LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+				AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
 
-			// transfer the original bet back
-			data.player.transfer(data.etherReceived);
+				// transfer the original bet back
+				data.player.transfer(data.etherReceived);
 
-			// log these two events
+				// log the refund
+				Refund(_queryId, data.etherReceived);
+			}
+			// log the ledger proof fail 
 			LedgerProofFailed(_queryId);
-			Refund(_queryId, data.etherReceived);
+			
 		}
 		else {
 			// again, this block is almost identical to the previous block in the play(...) function 

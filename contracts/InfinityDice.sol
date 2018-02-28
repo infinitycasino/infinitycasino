@@ -47,6 +47,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	uint8 public MAXWIN_inTHOUSANDTHPERCENTS; // determines the maximum win a user may receive.
 
 	bool public GAMEPAUSED;
+	bool public REFUNDSACTIVE;
 
 	address public OWNER;
 
@@ -64,6 +65,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		AMOUNTPAIDOUT = 0;
 		GAMESPLAYED = 0;
 		GAMEPAUSED = false;
+		REFUNDSACTIVE = true;
 
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
@@ -137,6 +139,12 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		GAMEPAUSED = paused;
 	}
 
+	function setRefundsActive(bool active) public {
+		require(msg.sender == OWNER);
+
+		REFUNDSACTIVE = active;
+	}
+
 	function setHouseEdge(uint8 houseEdgeInThousandthPercents) public {
 		// house edge cannot be set > 5%, can be set to zero for promotions
 		require(msg.sender == OWNER && houseEdgeInThousandthPercents <= 50);
@@ -179,7 +187,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		require(block.timestamp - data.start >= ORACLIZEQUERYMAXTIME
 			&& (msg.sender == OWNER || msg.sender == data.player)
 			&& (!data.paidOut)
-			&& LIABILITIES >= data.etherReceived);
+			&& LIABILITIES >= data.etherReceived
+			&& REFUNDSACTIVE);
 
 		// set paidout == true, so users can't request more refunds, and a super delayed oraclize __callback will just get reverted
 		diceData[oraclizeQueryId].paidOut = true;
@@ -361,16 +370,20 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		// if the proof has failed, immediately refund the player his original bet...
 		if (oraclize_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0){
 
-			// if the call fails, then subtract the original value sent from liabilites and amount wagered, and then send it back
-			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
-			AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
+			if (REFUNDSACTIVE){
+				// if the call fails, then subtract the original value sent from liabilites and amount wagered, and then send it back
+				LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+				AMOUNTWAGERED = SafeMath.sub(AMOUNTWAGERED, data.etherReceived);
 
-			// transfer the original bet
-			data.player.transfer(data.etherReceived);
+				// transfer the original bet
+				data.player.transfer(data.etherReceived);
 
-			// log these two events
+				// log the refund
+				Refund(_queryId, data.etherReceived);
+			}
+			// log the ledger proof fail
 			LedgerProofFailed(_queryId);
-			Refund(_queryId, data.etherReceived);
+			
 		}
 		// else, resolve the bet as normal with this miner-proof proven-randomness from oraclize.
 		else {
@@ -449,7 +462,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			DiceLargeBet(_queryId, i, logsData[0], logsData[1], logsData[2], logsData[3]);
 		}
 	}
-
 
 // END OF CONTRACT. REPORT ANY BUGS TO DEVELOPMENT@INFINITYCASINO.IO
 // YES! WE _DO_ HAVE A BUG BOUNTY PROGRAM!
