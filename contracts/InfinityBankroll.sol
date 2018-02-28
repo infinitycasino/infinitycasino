@@ -38,7 +38,6 @@ contract InfinityBankroll is ERC20 {
 	// to send these players their winnings.
 	// Feel free to audit these contracts on etherscan...
 	address[2] public TRUSTEDADDRESSES;
-	mapping(address => uint256) trustedAddressTargetAmount;
 
 	// mapping to log the last time a user contributed to the bankroll 
 	mapping(address => uint256) contributionTime;
@@ -91,61 +90,64 @@ contract InfinityBankroll is ERC20 {
 		TRUSTEDADDRESSES[0] = dice;
 		TRUSTEDADDRESSES[1] = slots;
 
-		// please note that these will be the GAME ADDRESSES which will forward their balances to the bankroll, and request to pay bettors from the bankroll.
-		trustedAddressTargetAmount[TRUSTEDADDRESSES[0]] = 1 ether;
-		trustedAddressTargetAmount[TRUSTEDADDRESSES[1]] = 1 ether;
 		////////////////////////////////////////////////
 		// CHANGE TO 6 HOURS ON LIVE DEPLOYMENT
 		////////////////////////////////////////////////
 		WAITTIMEUNTILWITHDRAWORTRANSFER = 0 seconds;
-		MAXIMUMINVESTMENTSALLOWED = 10 ether;
+		MAXIMUMINVESTMENTSALLOWED = 100 ether;
 	}
 
 	///////////////////////////////////////////////
 	// VIEW FUNCTIONS -> mainly for frontend
 	/////////////////////////////////////////////// 
 
-	function checkAmountAllocatedToGame(address gameAddress) view public returns(uint256) {
-		return trustedAddressTargetAmount[gameAddress];
-	}
-
 	function checkWhenContributorCanTransferOrWithdraw(address bankrollerAddress) view public returns(uint256){
 		return contributionTime[bankrollerAddress];
 	}
 
-
 	///////////////////////////////////////////////
-	// BANKROLL CONTRACT -> GAME CONTRACT functions
+	// BANKROLL CONTRACT <-> GAME CONTRACTS functions
 	/////////////////////////////////////////////// 
 
-	// get sum(current balances) from all games and this contract 
-	function getCurrentBalances() view public returns(uint256) {
-		uint256 totalBalances = BANKROLL;
-		// loop through all trusted addresses, and get their balances 
-		totalBalances += InfinityCasinoGameInterface(TRUSTEDADDRESSES[0]).BANKROLL();
-		totalBalances += InfinityCasinoGameInterface(TRUSTEDADDRESSES[1]).BANKROLL();
+	function payEtherToWinner(uint256 amtEther, address winner) public addressInTrustedAddresses(msg.sender){
+		// this function will get called by a game contract when someone wins a game
 
-		return totalBalances;
+		// subtract the amount from BANKROLL
+		BANKROLL = SafeMath.sub(BANKROLL, amtEther);
+
+		// and transfer to a player
+		// note, a failed transfer to a player will propagate the OP_REVERT.
+		winner.transfer(amtEther);
 	}
+
+	function receiveEtherFromGameAddress() payable public addressInTrustedAddresses(msg.sender) {
+		// this function will get called from the game contracts when someone starts a game.
+		BANKROLL = SafeMath.add(BANKROLL, msg.value);
+	}
+
+	///////////////////////////////////////////////
+	// BANKROLL CONTRACT MAIN FUNCTIONS
+	///////////////////////////////////////////////
+
 
 	// this function ADDS to the bankroll of infinity casino, and credits the bankroller a proportional
 	// amount of tokens so they may withdraw their tokens later
 	// also if there is only a limited amount of space left in the bankroll, a user can just send as much 
 	// ether as they want, because they will be able to contribute up to the maximum, and then get refunded the rest.
 	function () public payable {
-		// save these in memory for cheap access.
-		uint256 currentTotalBankroll = getCurrentBalances();
+
+		// save in memory for cheap access.
+		uint256 currentTotalBankroll = BANKROLL;
 
 		require(currentTotalBankroll < MAXIMUMINVESTMENTSALLOWED);
 
-		uint256 currentContractBankroll = BANKROLL;
-		uint256 currentSupplyOfTokens = totalSupply;
-		uint256 contributedEther = msg.value;
+		uint256 currentSupplyOfTokens = totalSupply();
+		uint256 contributedEther;
 
 		bool contributionTakesBankrollOverLimit;
 		uint256 ifContributionTakesBankrollOverLimit_Refund;
 
-		if (SafeMath.add(currentTotalBankroll, contributedEther) > MAXIMUMINVESTMENTSALLOWED){
+		if (SafeMath.add(currentTotalBankroll, msg.value) > MAXIMUMINVESTMENTSALLOWED){
 			// allow the bankroller to contribute up to the allowed amount of ether, and refund the rest.
 			contributionTakesBankrollOverLimit = true;
 			// set contributed ether as (MAXIMUMINVESTMENTSALLOWED - BANKROLL)
@@ -153,16 +155,21 @@ contract InfinityBankroll is ERC20 {
 			// refund the rest of the ether, which is (original amount sent - (maximum amount allowed - bankroll))
 			ifContributionTakesBankrollOverLimit_Refund = SafeMath.sub(msg.value, contributedEther);
 		}
+		else {
+			contributedEther = msg.value;
+		}
 
 		// determine the ratio of contribution versus total BANKROLL.
 		uint256 creditedTokens = SafeMath.mul(contributedEther, currentSupplyOfTokens) / currentTotalBankroll;
 
 		// now update the total supply of tokens and bankroll amount
 		totalSupply = SafeMath.add(currentSupplyOfTokens, creditedTokens);
-		BANKROLL = SafeMath.add(currentContractBankroll, contributedEther);
+		BANKROLL = SafeMath.add(currentTotalBankroll, contributedEther);
 
 		// now credit the user with his amount of contributed tokens 
 		balances[msg.sender] = SafeMath.add(balances[msg.sender], creditedTokens);
+
+		// update his contribution time for stake time locking
 		contributionTime[msg.sender] = block.timestamp;
 
 		// now look if the attempted contribution would have taken the BANKROLL over the limit, 
@@ -194,15 +201,12 @@ contract InfinityBankroll is ERC20 {
 			&& _amountTokens > 0);
 
 		// save in memory for cheap access.
-		uint256 currentContractBankroll = BANKROLL;
-		uint256 currentTotalBankroll = getCurrentBalances();
+		
+		uint256 currentTotalBankroll = BANKROLL;
 		uint256 currentSupplyOfTokens = totalSupply;
 
 		// calculate the token withdraw ratio based on current supply 
 		uint256 withdrawEther = SafeMath.mul(_amountTokens, currentTotalBankroll) / currentSupplyOfTokens;
-
-		// now verify that this requested amount of ether is contained in the bankroll contract...
-		require(withdrawEther <= currentContractBankroll);
 
 		// developers take 1% of withdrawls 
 		uint256 developersCut = withdrawEther / 100;
@@ -215,7 +219,7 @@ contract InfinityBankroll is ERC20 {
 		balances[msg.sender] = SafeMath.sub(tokenBalance, _amountTokens);
 
 		// update the bankroll based on the withdrawn amount.
-		BANKROLL = SafeMath.sub(currentContractBankroll, withdrawEther);
+		BANKROLL = SafeMath.sub(currentTotalBankroll, withdrawEther);
 
 		// update the developers fund based on this calculated amount 
 		DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);
@@ -228,6 +232,12 @@ contract InfinityBankroll is ERC20 {
 
 		// log a destroy tokens event
 		Transfer(msg.sender, 0x0, _amountTokens);
+	}
+
+	function cashoutINFSTokens_ALL() public {
+
+		// just forward to cashoutINFSTokens with input as the senders entire balance
+		cashoutINFSTokens(balances[msg.sender]);
 	}
 
 	////////////////////
@@ -251,55 +261,6 @@ contract InfinityBankroll is ERC20 {
 		require(msg.sender == OWNER);
 
 		OWNER = newOwner;
-	}
-
-	function changeTargetGameFunds(uint256 funds, address gameAddress) public addressInTrustedAddresses(gameAddress) {
-		require(msg.sender == OWNER);
-
-		trustedAddressTargetAmount[gameAddress] = funds;
-	}
-
-	function assessBankrollOfGame(address gameAddress) private {
-
-		uint256 gameBalance = InfinityCasinoGameInterface(gameAddress).BANKROLL();
-		uint256 suggestedBalance = trustedAddressTargetAmount[gameAddress];
-		
-		// if the game has made money, then send a call to the game requesting that the game sends excess balance to the bankroll 
-		if (gameBalance > suggestedBalance) {
-
-			// calculate the amount that the contract must pay 
-			uint256 mustPay = SafeMath.sub(gameBalance, suggestedBalance);
-
-			// force the game contract to pay this amount of ether 
-			InfinityCasinoGameInterface(gameAddress).payEtherToBankrollContract(mustPay);
-
-			// note: BANKROLL does not need to be incremented, does in receiveEtherFromGameAddress()
-		}
-		// reload bankroll with ether.
-		else if (suggestedBalance > gameBalance){
-			// calulate the amount the contract must give, in ether.
-			uint256 mustGive = SafeMath.sub(suggestedBalance, gameBalance);
-
-			// give this contract ether, to it's correct function 
-			InfinityCasinoGameInterface(gameAddress).acceptEtherFromBankrollContract.value(mustGive)();
-			
-			// decrease BANKROLL by the amount given out 
-			BANKROLL = SafeMath.sub(BANKROLL, mustGive);
-		}
-		// if suggestedBalance == gameBalance, then do nothing
-	}
-
-	// use the above function, but just loop through all games.
-	function assessBankrollOfAllGames() public {
-		require(msg.sender == OWNER);
-
-		assessBankrollOfGame(TRUSTEDADDRESSES[0]);
-		assessBankrollOfGame(TRUSTEDADDRESSES[1]);
-	}
-
-	function receiveEtherFromGameAddress() payable public addressInTrustedAddresses(msg.sender) {
-		// this function will get called from the game contracts, and just sends ether to the main contract and increments the bankroll.
-		BANKROLL = SafeMath.add(BANKROLL, msg.value);
 	}
 
 	function changeWaitTimeUntilWithdrawOrTransfer(uint256 waitTime) public {
