@@ -50,8 +50,8 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	function MoonMissionSlots() public {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
-		oraclize_setCustomGasPrice(20000000000);
-		ORACLIZEGASPRICE = 20000000000;
+		oraclize_setCustomGasPrice(10000000000);
+		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -59,7 +59,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		GAMEPAUSED = false;
 
 		ORACLIZEQUERYMAXTIME = 6 hours;
-		MINBET_forORACLIZE = 1250 finney; // 1.25 ether is the max bet to avoid miner cheating. see python sim. on our github
+		MINBET_forORACLIZE = 350 finney; // 0.35 ether is the max bet to avoid miner cheating. see python sim. on our github
 		MINBET = 1 finney; // currently, this is ~40-50c a spin, which is pretty average slots. This is changeable by OWNER 
         MAXWIN_inTHOUSANDTHPERCENTS = 250; // 250/1000 so a jackpot can take 25% of bankroll (extremely rare)
         OWNER = msg.sender;
@@ -200,7 +200,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			bytes32 blockHash = block.blockhash(block.number);
 
 			// use dialsSpun as a nonce for the oraclize return random bytes.
-			uint256 dialsSpun = DIALSSPUN;
+			uint256 dialsSpun;
 
 			// dial1, dial2, dial3 are the items that the wheel lands on, represented by uints 0-6
 			// these are then echoed to the front end by data1, data2, data3
@@ -300,7 +300,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			}
 
 			// add these new dials to the storage variable DIALSSPUN
-			DIALSSPUN = dialsSpun;
+			DIALSSPUN += dialsSpun;
 
 			// calculate amount for the developers fund.
 			// this is: value of ether * (5% house edge) * (20% cut)
@@ -425,7 +425,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		else {
 			// again, this block is almost identical to the previous block in the play(...) function 
 			// instead of duplicating documentation, we will just point out the changes from the other block 
-			uint256 dialsSpun = DIALSSPUN;
+			uint256 dialsSpun;
 			
 			uint8 dial1;
 			uint8 dial2;
@@ -513,7 +513,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				}
 			}
 
-			DIALSSPUN = dialsSpun;
+			DIALSSPUN += dialsSpun;
 
 			uint256 etherPaidout = SafeMath.mul((data.etherReceived / data.credits), payout);
 			uint256 developersCut = data.etherReceived / 100;

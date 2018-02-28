@@ -57,8 +57,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
 		// initially set gas price to 10 Gwei, but this can be changed later to account for network congestion.
-		oraclize_setCustomGasPrice(20000000000);
-		ORACLIZEGASPRICE = 20000000000;
+		oraclize_setCustomGasPrice(10000000000);
+		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
 		AMOUNTPAIDOUT = 0;
@@ -66,7 +66,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		GAMEPAUSED = false;
 
 		ORACLIZEQUERYMAXTIME = 6 hours;
-		MINBET_forORACLIZE = 1250 finney; // 1250 finney or 1.25 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
+		MINBET_forORACLIZE = 350 finney; // 0.35 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
 		MINBET = 10 finney;
 		HOUSEEDGE_inTHOUSANDTHPERCENTS = 5; // 5/1000 == 0.5% house edge
 		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
@@ -214,7 +214,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			// again, randomness will be determined by keccak256(blockhash, nonce)
 			// store these in memory for cheap access.
 			bytes32 blockHash = block.blockhash(block.number);
-			uint256 gamesPlayed = GAMESPLAYED;
 			uint8 houseEdgeInThousandthPercents = HOUSEEDGE_inTHOUSANDTHPERCENTS;
 
 			// these are variables that will be modified when the game runs
@@ -225,10 +224,12 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			uint256 etherAvailable = msg.value;
 
 			// these are the logs for the frontend...
-			uint256[] memory data = new uint256[](4);
+			uint256[] memory logsData = new uint256[](4);
 
 			uint16 i = 0;
 			uint256 winnings;
+			uint256 gamesPlayed;
+
 			while (i < rolls && etherAvailable >= betPerRoll){
 				// add 1 to gamesPlayed, this is the nonce.
 				gamesPlayed++;
@@ -242,18 +243,18 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 					// now assemble logs for the front end...
 					if (i <= 255){
 						// place a 1 in the i'th bit of data1
-						data[0] += uint256(2) ** (255 - i);
+						logsData[0] += uint256(2) ** (255 - i);
 					}
 					else if (i <= 511){
 						// place a 1 in the (i-256)'th bit of data2
-						data[1] += uint256(2) ** (511 - i);
+						logsData[1] += uint256(2) ** (511 - i);
 					}
 					else if (i <= 767){
-						data[2] += uint256(2) ** (767 - i);
+						logsData[2] += uint256(2) ** (767 - i);
 					}
 					else {
 						// where i <= 1023
-						data[3] += uint256(2) ** (1023 - i);
+						logsData[3] += uint256(2) ** (1023 - i);
 					}
 				}
 				else {
@@ -283,13 +284,13 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherAvailable);
 
 			// update the gamesPlayer with how many games were played 
-			GAMESPLAYED = gamesPlayed;
+			GAMESPLAYED += gamesPlayed;
 
 			// finally transfer the ether to the player (no reentrancy issues here...)
 			msg.sender.transfer(etherAvailable);
 
 			// log an event, with the outcome of the dice game, so that the frontend can parse it for the player.
-			DiceSmallBet(i, data[0], data[1], data[2], data[3]);
+			DiceSmallBet(i, logsData[0], logsData[1], logsData[2], logsData[3]);
 		}
 
 		// // otherwise, we need to save the game data into storage, and call oraclize
@@ -374,7 +375,6 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		// else, resolve the bet as normal with this miner-proof proven-randomness from oraclize.
 		else {
 			// save these in memory for cheap access
-			uint256 gamesPlayed = GAMESPLAYED;
 			uint8 houseEdgeInThousandthPercents = HOUSEEDGE_inTHOUSANDTHPERCENTS;
 
 			// set the current balance available to the player as etherReceived
@@ -386,6 +386,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			// this loop is highly similar to the one from before. Instead of fully documented, the differences will be pointed out instead.
 			uint16 i = 0;
 			uint256 winnings;
+			uint256 gamesPlayed;
 			while (i < data.rolls && etherAvailable >= data.betPerRoll){
 				
 				gamesPlayed++;
@@ -439,7 +440,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 
 			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherAvailable);
 			
-			GAMESPLAYED = gamesPlayed;
+			GAMESPLAYED += gamesPlayed;
 
 			// now get player from data, not msg.sender
 			data.player.transfer(etherAvailable);
