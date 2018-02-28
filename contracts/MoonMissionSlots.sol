@@ -26,40 +26,49 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 
 	mapping (bytes32 => SlotsGameData) public slotsData;
 
-	uint256 public BANKROLL;
+	// ether in this contract can be in one of two locations:
 	uint256 public LIABILITIES;
-	uint256 public AMOUNTWAGERED;
-	uint256 public AMOUNTPAIDOUT;
-	uint256 public DIALSSPUN;
 	uint256 public DEVELOPERSFUND;
 
+	// counters for frontend statistics
+	uint256 public AMOUNTWAGERED;
+	uint256 public DIALSSPUN;
+	
+	// togglable values
 	uint256 public ORACLIZEQUERYMAXTIME;
 	uint256 public MINBET_forORACLIZE;
 	uint256 public MINBET;
 	uint256 public ORACLIZEGASPRICE;
 	uint16 public MAXWIN_inTHOUSANDTHPERCENTS;
 
+	// togglable functionality of contract
 	bool public GAMEPAUSED;
 	bool public REFUNDSACTIVE;
 
+	// owner of contract
 	address public OWNER;
 
+	// bankroller address and interface
 	address public BANKROLLER;
-	InfinityBankroll public BANKROLLERINSTANCE;
 
 	// constructor
 	function MoonMissionSlots() public {
 		// ledger proof is ALWAYS verified on-chain
 		oraclize_setProof(proofType_Ledger);
+
+		// gas prices for oraclize call back, can be changed
 		oraclize_setCustomGasPrice(10000000000);
 		ORACLIZEGASPRICE = 10000000000;
 
+		// counters to see how popular the contracts are + real time stats
 		AMOUNTWAGERED = 0;
-		AMOUNTPAIDOUT = 0;
 		DIALSSPUN = 0;
+
+		// toggles for game functionality
 		GAMEPAUSED = false;
 		REFUNDSACTIVE = true;
 
+		// togglable values for different constants and checks
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is the max bet to avoid miner cheating. see python sim. on our github
 		MINBET = 1 finney; // currently, this is ~40-50c a spin, which is pretty average slots. This is changeable by OWNER 
@@ -67,23 +76,9 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
         OWNER = msg.sender;
 	}
 
-	// bankroller contract address only functions below...
-
-	function acceptEtherFromBankrollContract() payable public {
-		require(msg.sender == BANKROLLER);
-
-		BANKROLL = SafeMath.add(BANKROLL, msg.value);
-	} 
-
-	function payEtherToBankrollContract(uint256 amountToSend) public {
-		require(msg.sender == BANKROLLER && amountToSend <= BANKROLL);
-
-		// decrement bankroll by amount to send
-		BANKROLL = SafeMath.sub(BANKROLL, amountToSend);
-
-		// send the amount to the bankroll contract.
-		BANKROLLERINSTANCE.receiveEtherFromGameAddress.value(amountToSend)();
-	}
+	////////////////////////////////////
+	// INTERFACE CONTACT FUNCTIONS
+	////////////////////////////////////
 
 	function payDevelopersFund(address developer) public {
 		require(msg.sender == BANKROLLER);
@@ -95,7 +90,13 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		developer.transfer(devFund);
 	}
 
-	// owner only, management functions below...
+	function receivePaymentForOraclize() payable public {
+		require(msg.sender == BANKROLLER);
+	}
+
+	////////////////////////////////////
+	// OWNER ONLY FUNCTIONS
+	////////////////////////////////////
 
 	// WARNING!!!!! Can only set this function once!
 	function setBankrollerContractOnce(address bankrollAddress) public {
@@ -103,7 +104,6 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		require(msg.sender == OWNER && BANKROLLER == address(0));
 
 		BANKROLLER = bankrollAddress;
-		BANKROLLERINSTANCE = InfinityBankroll(bankrollAddress);
 	}
 
 	function transferOwnership(address newOwner) public {
@@ -199,7 +199,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			&& betPerCredit >= MINBET
 			&& credits > 0 
 			&& credits <= 224 //maximum number of spins is 84, must fit in 3 uint256's for logging.
-			&& SafeMath.mul(betPerCredit, 5000) <= (SafeMath.mul(BANKROLL, MAXWIN_inTHOUSANDTHPERCENTS) / 1000)); // 5000 is the jackpot payout (max win on a roll)
+			&& SafeMath.mul(betPerCredit, 5000) <= (SafeMath.mul(InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL(), MAXWIN_inTHOUSANDTHPERCENTS) / 1000)); // 5000 is the jackpot payout (max win on a roll)
 
 		// if each bet is relatively small, we do not need to worry about miner cheating
 		// we can resolve the bet in house with block.blockhash
@@ -318,25 +318,20 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			// add this to the developers fund.
 			DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);
 
+			// transfer the (msg.value - developersCut) to the bankroll
+			InfinityCasinoBankrollInterface(BANKROLLER).receiveEtherFromGameAddress.value(SafeMath.sub(msg.value, developersCut))()
+
 			// now payout ether
 			uint256 etherPaidout = SafeMath.mul(betPerCredit, payout);
 
-			// calculate amount won from the betPerCredit * payout amt
-			// subtract the amount won from the bankroll, amount won := data.etherReceived / data.credits * payout
-			BANKROLL = SafeMath.add(SafeMath.sub(BANKROLL, SafeMath.add(etherPaidout, developersCut)), msg.value);
-
-			// and add the amount to the amount paid out storage variable
-			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherPaidout);
+			// and add the amount wagered
 			AMOUNTWAGERED = SafeMath.add(AMOUNTWAGERED, msg.value);
 
-			// transfer the paidout amount to the player
-			msg.sender.transfer(etherPaidout);
+			// make the bankroll transfer the paidout amount to the player
+			InfinityCasinoBankrollInterface(BANKROLLER).payEtherToWinner(etherPaidout, msg.sender);
 
-			// and lastly, log an event with the queryID of zero, because it was not from oraclize
+			// and lastly, log an event
 			// log the data logs that were created above, we will not use event watchers here, but will use the txReceipt to get logs instead.
-			// note that we do not make it super obvious how much was paid out
-			// this game is meant to feel like the spins are calculated at the time of spin
-			// even though this would be impossible without a massive wait time, and gas cost for each spin
 			SlotsSmallBet(logsData[0], logsData[1], logsData[2], logsData[3], logsData[4], logsData[5], logsData[6], logsData[7]);
 
 		}
@@ -346,48 +341,51 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		else {
 			// oraclize_newRandomDSQuery(delay in seconds, bytes of random data, gas for callback function)
 			bytes32 oraclizeQueryId;
+
 			if (credits <= 28){
+				// force the bankroll to pay for the Oraclize transaction
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(350000);
+
+				// send a new query to oraclize
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 350000);
-			    // add the amount bet to the bankroll, minus the gas spent on oraclize
-				BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(350000, ORACLIZEGASPRICE));
 			}
 			else if (credits <= 56){
-			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 400000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(400000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(400000, ORACLIZEGASPRICE));
+			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 400000);
 			}
 			else if (credits <= 84){
-			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 450000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(450000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(450000, ORACLIZEGASPRICE));
+			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 450000);
 			}
 			else if (credits <= 112){
-				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 500000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(500000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(500000, ORACLIZEGASPRICE));
+				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 500000);
 			}
 			else if (credits <= 140){
-				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 550000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(550000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(550000, ORACLIZEGASPRICE));
+				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 550000);
 			}
 			else if (credits <= 168){
-				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 600000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(600000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(600000, ORACLIZEGASPRICE));
+				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 600000);
 			}
 			else if (credits <= 196){
-				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 650000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(650000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(650000, ORACLIZEGASPRICE));
+				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 650000);
 			}
 			else {
 				// credits <= 224
-				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 700000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(700000);
 
-			    BANKROLL = SafeMath.sub(BANKROLL, SafeMath.mul(700000, ORACLIZEGASPRICE));
-			    
+				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 700000);
 			}
+
 			// add the new slots data to a mapping so that the oraclize __callback can use it later
 			slotsData[oraclizeQueryId] = SlotsGameData({
 				player : msg.sender,
@@ -471,7 +469,6 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				// dial 3
 				dial3 = getDial3Type(dial3);
 
-				
 				// determine the payout
                 payout += determinePayout(dial1, dial2, dial3);
 				
@@ -526,25 +523,29 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				}
 			}
 
+			// track that these spins were made
 			DIALSSPUN += dialsSpun;
 
-			uint256 etherPaidout = SafeMath.mul((data.etherReceived / data.credits), payout);
+			// IMPORTANT: we must change the "paidOut" to TRUE here to prevent reentrancy/other nasty effects.
+			// this was not needed with the previous loop/code block, and is used because variables must be written into storage
+			slotsData[_queryId].paidOut = true;
+
+			// decrease LIABILITIES when the rolls are made
+			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
+
+			// get the developers cut, and send the rest of the ether received to the bankroller contract
 			uint256 developersCut = data.etherReceived / 100;
 
 			DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);
 
-			LIABILITIES = SafeMath.sub(LIABILITIES, data.etherReceived);
-			BANKROLL = SafeMath.add(SafeMath.sub(BANKROLL, SafeMath.add(etherPaidout, developersCut)), data.etherReceived);
-			
-			AMOUNTPAIDOUT = SafeMath.add(AMOUNTPAIDOUT, etherPaidout);
+			InfinityCasinoBankrollInterface(BANKROLLER).receiveEtherFromGameAddress.value(SafeMath.sub(data.etherReceived, developersCut))()
 
-			// IMPORTANT: we must change the "paidOut" to TRUE here to prevent reentrancy/other nasty effects.
-			// this was not needed with the previous loop/code block, and is used because variables must be written into storage
-			// with the oraclize __callbacks
-			slotsData[_queryId].paidOut = true;
-			// now, transfer the paidOut amount (use data to get these variable as before)
-			data.player.transfer(etherPaidout);
+			// get the ether to be paid out, and force the bankroller contract to pay out the player
+			uint256 etherPaidout = SafeMath.mul((data.etherReceived / data.credits), payout);
 
+			InfinityCasinoBankrollInterface(BANKROLLER).payEtherToWinner(etherPaidout, data.player)
+
+			// log en event with indexed query id
 			SlotsLargeBet(_queryId, logsData[0], logsData[1], logsData[2], logsData[3], logsData[4], logsData[5], logsData[6], logsData[7]);
 		}
 	}
