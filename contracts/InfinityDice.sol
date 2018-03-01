@@ -447,7 +447,7 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 			InfinityCasinoBankrollInterface(BANKROLLER).receiveEtherFromGameAddress.value(SafeMath.sub(data.etherReceived, developersCut))();
 
 			// force the bankroller contract to pay out the player
-			InfinityCasinoBankrollInterface(BANKROLLER).payEtherToWinner(etherPaidout, data.player);
+			InfinityCasinoBankrollInterface(BANKROLLER).payEtherToWinner(etherAvailable, data.player);
 
 			// log an event, now with the oraclize query id
 			DiceLargeBet(_queryId, i, logsData[0], logsData[1], logsData[2], logsData[3]);

@@ -148,7 +148,7 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 
 		require(currentTotalBankroll < MAXIMUMINVESTMENTSALLOWED);
 
-		uint256 currentSupplyOfTokens = totalSupply();
+		uint256 currentSupplyOfTokens = totalSupply;
 		uint256 contributedEther;
 
 		bool contributionTakesBankrollOverLimit;
@@ -189,7 +189,7 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 		FundBankroll(msg.sender, contributedEther, creditedTokens);
 
 		// log a mint tokens event
-		Transfer(0x0, msg.sender, initialTokens);
+		Transfer(0x0, msg.sender, creditedTokens);
 	}
 
 	function cashoutINFSTokens(uint256 _amountTokens) public {

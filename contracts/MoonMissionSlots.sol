@@ -250,7 +250,71 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				dial3 = getDial3Type(dial3);
 
 				// determine the payout
-				payout += determinePayout(dial1, dial2, dial3);
+				if (dial1 == 2 && dial2 == 1 && dial3 == 0)	
+					payout += 5000;
+				
+				// all gold ether
+				else if (dial1 == 0 && dial2 == 0 && dial3 == 0) 
+					payout += 1777;
+				
+				// all silver ether 
+				else if (dial1 == 1 && dial2 == 1 && dial3 == 1) 
+					payout += 250;
+				
+				// all bronze ether
+				else if (dial1 == 2 && dial2 == 2 && dial3 == 2) 
+					payout += 250;
+				
+				// all some type of ether
+				else if (dial1 >= 0 && dial1 <= 2 && dial2 >= 0 && dial2 <= 2 && dial3 >= 0 && dial3 <= 2) 
+					payout += 95;
+				
+				// bronze planet -> silver planet -> gold planet
+				else if (dial1 == 5 && dial2 == 4 && dial3 == 3) 
+					payout += 90;
+				
+				// all gold planet
+				else if (dial1 == 3 && dial2 == 3 && dial3 == 3)
+					payout += 50;
+				
+				// all silver planet
+				else if (dial1 == 4 && dial2 == 4 && dial3 == 4) 
+					payout += 25;
+				
+		// 		a little complicated here, but this is the payout for one gold planet, one silver planet, one bronze planet, any order!
+		        // NOTE: dial1 == 5 && dial2 == 4 && dial3 == 3 covered ^^^ with a better payout!
+				else if ((dial1 == 3 && ((dial2 == 4 && dial3 == 5) || (dial2 == 5 && dial3 == 4)))
+						|| (dial1 == 4 && ((dial2 == 3 && dial3 == 5) || (dial2 == 5 && dial3 == 3)))
+						|| (dial1 == 5 && dial2 == 3 && dial3 == 4) )  
+						
+					payout += 20;
+				
+		// 		all bronze planet 
+				else if (dial1 == 5 && dial2 == 5 && dial3 == 5) 
+					payout += 10;
+				
+		// 		any three planet type 
+				else if (dial1 >= 3 && dial1 <= 5 && dial2 >= 3 && dial2 <= 5 && dial3 >=3 && dial3 <= 5) 
+					payout += 3;
+				
+		// 		any three gold
+				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 || dial2 == 3) && (dial3 == 0 || dial3 == 3)) 
+					payout += 3;
+				
+		// 		any three silver
+				else if ((dial1 == 1 || dial1 == 4) && (dial2 == 1 || dial2 == 4) && (dial3 == 1 || dial3 == 4)) 
+					payout += 2;
+				
+		// 		any three bronze 
+				else if ((dial1 == 2 || dial1 == 5) && (dial2 == 2 || dial2 == 5) && (dial3 == 2 || dial3 == 5)) 
+					payout += 2;
+				
+		// 		all blank
+				else if ( dial1 == 6 && dial2 == 6 && dial3 == 6) 
+					payout += 1;
+					
+				else
+					payout += 0;
 
 				// Here we assemble uint256's of log data so that the frontend can "replay" the spins
 				// each "dial" is a uint8 but can only be between 0-6, so would only need 3 bits to store this. uint(bits('111')) = 7
@@ -466,7 +530,71 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 				dial3 = getDial3Type(dial3);
 
 				// determine the payout
-                payout += determinePayout(dial1, dial2, dial3);
+                if (dial1 == 2 && dial2 == 1 && dial3 == 0)	
+					payout += 5000;
+				
+				// all gold ether
+				else if (dial1 == 0 && dial2 == 0 && dial3 == 0) 
+					payout += 1777;
+				
+				// all silver ether 
+				else if (dial1 == 1 && dial2 == 1 && dial3 == 1) 
+					payout += 250;
+				
+				// all bronze ether
+				else if (dial1 == 2 && dial2 == 2 && dial3 == 2) 
+					payout += 250;
+				
+				// all some type of ether
+				else if (dial1 >= 0 && dial1 <= 2 && dial2 >= 0 && dial2 <= 2 && dial3 >= 0 && dial3 <= 2) 
+					payout += 95;
+				
+				// bronze planet -> silver planet -> gold planet
+				else if (dial1 == 5 && dial2 == 4 && dial3 == 3) 
+					payout += 90;
+				
+				// all gold planet
+				else if (dial1 == 3 && dial2 == 3 && dial3 == 3)
+					payout += 50;
+				
+				// all silver planet
+				else if (dial1 == 4 && dial2 == 4 && dial3 == 4) 
+					payout += 25;
+				
+		// 		a little complicated here, but this is the payout for one gold planet, one silver planet, one bronze planet, any order!
+		        // NOTE: dial1 == 5 && dial2 == 4 && dial3 == 3 covered ^^^ with a better payout!
+				else if ((dial1 == 3 && ((dial2 == 4 && dial3 == 5) || (dial2 == 5 && dial3 == 4)))
+						|| (dial1 == 4 && ((dial2 == 3 && dial3 == 5) || (dial2 == 5 && dial3 == 3)))
+						|| (dial1 == 5 && dial2 == 3 && dial3 == 4) )  
+						
+					payout += 20;
+				
+		// 		all bronze planet 
+				else if (dial1 == 5 && dial2 == 5 && dial3 == 5) 
+					payout += 10;
+				
+		// 		any three planet type 
+				else if (dial1 >= 3 && dial1 <= 5 && dial2 >= 3 && dial2 <= 5 && dial3 >=3 && dial3 <= 5) 
+					payout += 3;
+				
+		// 		any three gold
+				else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 || dial2 == 3) && (dial3 == 0 || dial3 == 3)) 
+					payout += 3;
+				
+		// 		any three silver
+				else if ((dial1 == 1 || dial1 == 4) && (dial2 == 1 || dial2 == 4) && (dial3 == 1 || dial3 == 4)) 
+					payout += 2;
+				
+		// 		any three bronze 
+				else if ((dial1 == 2 || dial1 == 5) && (dial2 == 2 || dial2 == 5) && (dial3 == 2 || dial3 == 5)) 
+					payout += 2;
+				
+		// 		all blank
+				else if ( dial1 == 6 && dial2 == 6 && dial3 == 6) 
+					payout += 1;
+					
+				else
+					payout += 0;
 				
 				// assembling log data
 				if (i <= 27){
@@ -523,7 +651,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 			DIALSSPUN += dialsSpun;
 
 			// and add the amount wagered
-			AMOUNTWAGERED = SafeMath.add(AMOUNTWAGERED, msg.value);
+			AMOUNTWAGERED = SafeMath.add(AMOUNTWAGERED, data.etherReceived);
 
 			// IMPORTANT: we must change the "paidOut" to TRUE here to prevent reentrancy/other nasty effects.
 			// this was not needed with the previous loop/code block, and is used because variables must be written into storage
@@ -619,58 +747,73 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 	// else								//  0     //
 	////////////////////////////////////////////////
 	
-	function determinePayout(uint8 dial1Type, uint8 dial2Type, uint8 dial3Type) internal pure returns(uint256) {
-		// bronze ether -> silver ether -> gold ether 
-		if (dial1Type == 2 && dial2Type == 1 && dial3Type == 0)			{ return 5000; } // JACKPOT!!!!!!
+// 	function determinePayout(uint8 dial1, uint8 dial2, uint8 dial3) internal pure returns(uint256) {
+// 		// bronze ether -> silver ether -> gold ether -- JACKPOT!!!!!!
+// 		if (dial1 == 2 && dial2 == 1 && dial3 == 0)	
+// 			return 5000;
 		
-		// all gold ether
-		else if (dial1Type == 0 && dial2Type == 0 && dial3Type == 0) 	{ return 1777; }
+// 		// all gold ether
+// 		else if (dial1 == 0 && dial2 == 0 && dial3 == 0) 
+// 			return 1777;
 		
-		// all silver ether 
-		else if (dial1Type == 1 && dial2Type == 1 && dial3Type == 1)	{ return 250; }
+// 		// all silver ether 
+// 		else if (dial1 == 1 && dial2 == 1 && dial3 == 1) 
+// 			return 250;
 		
-		// all bronze ether
-		else if (dial1Type == 2 && dial2Type == 2 && dial3Type == 2)	{ return 250; }
+// 		// all bronze ether
+// 		else if (dial1 == 2 && dial2 == 2 && dial3 == 2) 
+// 			return 250;
 		
-		// all some type of ether
-		else if (dial1Type >= 0 && dial1Type <= 2 && dial2Type >= 0 && dial2Type <= 2 && dial3Type >= 0 && dial3Type <= 2)	{ return 95; }
+// 		// all some type of ether
+// 		else if (dial1 >= 0 && dial1 <= 2 && dial2 >= 0 && dial2 <= 2 && dial3 >= 0 && dial3 <= 2) 
+// 			return 95;
 		
-		// bronze planet -> silver planet -> gold planet
-		else if (dial1Type == 5 && dial2Type == 4 && dial3Type == 3) 	{ return 90; }
+// 		// bronze planet -> silver planet -> gold planet
+// 		else if (dial1 == 5 && dial2 == 4 && dial3 == 3) 
+// 			return 90;
 		
-		// all gold planet
-		else if (dial1Type == 3 && dial2Type == 3 && dial3Type == 3)	{ return 50; }
+// 		// all gold planet
+// 		else if (dial1 == 3 && dial2 == 3 && dial3 == 3)
+// 			return 50;
 		
-		// all silver planet
-		else if (dial1Type == 4 && dial2Type == 4 && dial3Type == 4)	{ return 25; }
+// 		// all silver planet
+// 		else if (dial1 == 4 && dial2 == 4 && dial3 == 4) 
+// 			return 25;
 		
-		// a little complicated here, but this is the payout for one gold planet, one silver planet, one bronze planet, any order!
-		else if ((dial1Type == 3 && ((dial2Type == 4 && dial3Type == 5) || (dial2Type == 5 && dial3Type == 4)))
-				|| (dial1Type == 4 && ((dial2Type == 3 && dial3Type == 5) || (dial2Type == 5 && dial3Type == 3)))
-				|| (dial1Type == 5 && dial2Type == 3 && dial3Type == 4) ) {  
-				//NOTE: dial1 == 5 && dial2 == 4 && dial3 == 3 covered ^^^ with a better payout!
+// // 		a little complicated here, but this is the payout for one gold planet, one silver planet, one bronze planet, any order!
+//         // NOTE: dial1 == 5 && dial2 == 4 && dial3 == 3 covered ^^^ with a better payout!
+// 		else if ((dial1 == 3 && ((dial2 == 4 && dial3 == 5) || (dial2 == 5 && dial3 == 4)))
+// 				|| (dial1 == 4 && ((dial2 == 3 && dial3 == 5) || (dial2 == 5 && dial3 == 3)))
+// 				|| (dial1 == 5 && dial2 == 3 && dial3 == 4) )  
+				
+// 			return 20;
+		
+// // 		all bronze planet 
+// 		else if (dial1 == 5 && dial2 == 5 && dial3 == 5) 
+// 			return 10;
+		
+// // 		any three planet type 
+// 		else if (dial1 >= 3 && dial1 <= 5 && dial2 >= 3 && dial2 <= 5 && dial3 >=3 && dial3 <= 5) 
+// 			return 3;
+		
+// // 		any three gold
+// 		else if ((dial1 == 0 || dial1 == 3) && (dial2 == 0 || dial2 == 3) && (dial3 == 0 || dial3 == 3)) 
+// 			return 3;
+		
+// // 		any three silver
+// 		else if ((dial1 == 1 || dial1 == 4) && (dial2 == 1 || dial2 == 4) && (dial3 == 1 || dial3 == 4)) 
+// 			return 2;
+		
+// // 		any three bronze 
+// 		else if ((dial1 == 2 || dial1 == 5) && (dial2 == 2 || dial2 == 5) && (dial3 == 2 || dial3 == 5)) 
+// 			return 2;
+		
+// // 		all blank
+// 		else if ( dial1 == 6 && dial2 == 6 && dial3 == 6) 
+// 			return 1;
 
-			return 20;
-		}
-		
-		// all bronze planet 
-		else if (dial1Type == 5 && dial2Type == 5 && dial3Type == 5)	{ return 10; }
-		
-		// any three planet type 
-		else if (dial1Type >= 3 && dial1Type <= 5 && dial2Type >= 3 && dial2Type <= 5 && dial3Type >=3 && dial3Type <= 5)	{ return 3; }
-		
-		// any three gold
-		else if ((dial1Type == 0 || dial1Type == 3) && (dial2Type == 0 || dial2Type == 3) && (dial3Type == 0 || dial3Type == 3)) { return 3; }
-		
-		// any three silver
-		else if ((dial1Type == 1 || dial1Type == 4) && (dial2Type == 1 || dial2Type == 4) && (dial3Type == 1 || dial3Type == 4)) { return 2; }
-		
-		// any three bronze 
-		else if ((dial1Type == 2 || dial1Type == 5) && (dial2Type == 2 || dial2Type == 5) && (dial3Type == 2 || dial3Type == 5)) { return 2; }
-		
-		// all blank
-		else if ( dial1Type == 6 && dial2Type == 6 && dial3Type == 6) { return 1; }
-		
-		else { return 0; }
-	}
+// 		else
+// 			return 0;
+// 	}
+
 }
