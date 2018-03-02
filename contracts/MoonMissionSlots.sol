@@ -4,7 +4,7 @@ import "./usingOraclize.sol";
 import "./InfinityBankroll.sol";
 import "./SafeMath.sol";
 
-contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
+contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 
 	using SafeMath for *;
 
@@ -69,7 +69,7 @@ contract MoonMissionSlots is InfinityCasinoGameInterface, usingOraclize {
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is the max bet to avoid miner cheating. see python sim. on our github
 		MINBET = 1 finney; // currently, this is ~40-50c a spin, which is pretty average slots. This is changeable by OWNER 
-        MAXWIN_inTHOUSANDTHPERCENTS = 250; // 250/1000 so a jackpot can take 25% of bankroll (extremely rare)
+        MAXWIN_inTHOUSANDTHPERCENTS = 750; // 250/1000 so a jackpot can take 25% of bankroll (extremely rare)
         OWNER = msg.sender;
 	}
 

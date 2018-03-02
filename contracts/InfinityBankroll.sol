@@ -146,7 +146,7 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 		// save in memory for cheap access.
 		uint256 currentTotalBankroll = BANKROLL;
 
-		require(currentTotalBankroll < MAXIMUMINVESTMENTSALLOWED);
+		require(currentTotalBankroll < MAXIMUMINVESTMENTSALLOWED && msg.value != 0);
 
 		uint256 currentSupplyOfTokens = totalSupply;
 		uint256 contributedEther;

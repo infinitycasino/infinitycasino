@@ -4,7 +4,7 @@ import "./usingOraclize.sol";
 import "./InfinityBankroll.sol";
 import "./SafeMath.sol";
 
-contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
+contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 
 	using SafeMath for *;
 
@@ -57,10 +57,10 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 	// constructor
 	function InfinityDice() public {
 		// ledger proof is ALWAYS verified on-chain
-		oraclize_setProof(proofType_Ledger);
+// 		oraclize_setProof(proofType_Ledger);
 
 		// gas prices for oraclize call back, can be changed
-		oraclize_setCustomGasPrice(10000000000);
+// 		oraclize_setCustomGasPrice(10000000000);
 		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
@@ -73,7 +73,8 @@ contract InfinityDice is InfinityCasinoGameInterface, usingOraclize {
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
 		MINBET = 10 finney;
 		HOUSEEDGE_inTHOUSANDTHPERCENTS = 5; // 5/1000 == 0.5% house edge
-		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
+// 		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
+        MAXWIN_inTHOUSANDTHPERCENTS = 70;
 		OWNER = msg.sender;
 	}
 
