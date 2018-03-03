@@ -69,7 +69,7 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 		ORACLIZEQUERYMAXTIME = 6 hours;
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is the max bet to avoid miner cheating. see python sim. on our github
 		MINBET = 1 finney; // currently, this is ~40-50c a spin, which is pretty average slots. This is changeable by OWNER 
-        MAXWIN_inTHOUSANDTHPERCENTS = 750; // 250/1000 so a jackpot can take 25% of bankroll (extremely rare)
+        MAXWIN_inTHOUSANDTHPERCENTS = 250; // 250/1000 so a jackpot can take 25% of bankroll (extremely rare)
         OWNER = msg.sender;
 	}
 
@@ -89,6 +89,14 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 
 	function receivePaymentForOraclize() payable public {
 		require(msg.sender == BANKROLLER);
+	}
+
+	////////////////////////////////////
+	// VIEW FUNCTIONS - FRONT END USAGE
+	////////////////////////////////////
+
+	function getMaxBet() public view returns(uint256){
+		return (MAXWIN_inTHOUSANDTHPERCENTS * InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL()) / 1000;
 	}
 
 	////////////////////////////////////
@@ -405,44 +413,44 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 
 			if (credits <= 28){
 				// force the bankroll to pay for the Oraclize transaction
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(350000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 350000);
 
 				// send a new query to oraclize
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 350000);
 			}
 			else if (credits <= 56){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(400000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 400000);
 
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 400000);
 			}
 			else if (credits <= 84){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(450000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 450000);
 
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 450000);
 			}
 			else if (credits <= 112){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(500000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 500000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 500000);
 			}
 			else if (credits <= 140){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(550000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 550000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 550000);
 			}
 			else if (credits <= 168){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(600000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 600000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 600000);
 			}
 			else if (credits <= 196){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(650000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 650000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 650000);
 			}
 			else {
 				// credits <= 224
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(700000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 700000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 700000);
 			}

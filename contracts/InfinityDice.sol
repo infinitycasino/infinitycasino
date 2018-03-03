@@ -57,10 +57,10 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 	// constructor
 	function InfinityDice() public {
 		// ledger proof is ALWAYS verified on-chain
-// 		oraclize_setProof(proofType_Ledger);
+		oraclize_setProof(proofType_Ledger);
 
 		// gas prices for oraclize call back, can be changed
-// 		oraclize_setCustomGasPrice(10000000000);
+		oraclize_setCustomGasPrice(10000000000);
 		ORACLIZEGASPRICE = 10000000000;
 
 		AMOUNTWAGERED = 0;
@@ -73,8 +73,7 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 		MINBET_forORACLIZE = 350 finney; // 0.35 ether is a limit to prevent an incentive for miners to cheat, any more will be forwarded to oraclize!
 		MINBET = 10 finney;
 		HOUSEEDGE_inTHOUSANDTHPERCENTS = 5; // 5/1000 == 0.5% house edge
-// 		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
-        MAXWIN_inTHOUSANDTHPERCENTS = 70;
+		MAXWIN_inTHOUSANDTHPERCENTS = 17; // 17/1000 == 1.7% of bankroll 
 		OWNER = msg.sender;
 	}
 
@@ -94,6 +93,14 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 
 	function receivePaymentForOraclize() payable public {
 		require(msg.sender == BANKROLLER);
+	}
+
+	////////////////////////////////////
+	// VIEW FUNCTIONS - FRONT END USAGE
+	////////////////////////////////////
+
+	function getMaxWin() public view returns(uint256){
+		return (MAXWIN_inTHOUSANDTHPERCENTS * InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL()) / 1000;
 	}
 
 	////////////////////////////////////
@@ -304,22 +311,22 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 
 			if (rolls <= 256){
 				// force the bankroll to pay for the Oraclize transaction
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(375000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 375000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 375000);
 			}
 			else if (rolls <= 512){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(575000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 575000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 575000);
 			}
 			else if (rolls <= 768){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(775000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 775000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 775000);
 			}
 			else {
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(1000000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 1000000);
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 1000000);
 			}
