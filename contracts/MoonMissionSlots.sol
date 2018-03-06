@@ -95,8 +95,8 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 	// VIEW FUNCTIONS - FRONT END USAGE
 	////////////////////////////////////
 
-	function getMaxBet() public view returns(uint256){
-		return (MAXWIN_inTHOUSANDTHPERCENTS * InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL()) / 1000;
+	function getMaxWin() public view returns(uint256){
+		return (SafeMath.mul(InfinityCasinoBankrollInterface(BANKROLLER).getBankroll(), MAXWIN_inTHOUSANDTHPERCENTS) / 1000);
 	}
 
 	////////////////////////////////////
@@ -204,7 +204,7 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 			&& betPerCredit >= MINBET
 			&& credits > 0 
 			&& credits <= 224 //maximum number of spins is 84, must fit in 3 uint256's for logging.
-			&& SafeMath.mul(betPerCredit, 5000) <= (SafeMath.mul(InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL(), MAXWIN_inTHOUSANDTHPERCENTS) / 1000)); // 5000 is the jackpot payout (max win on a roll)
+			&& SafeMath.mul(betPerCredit, 5000) <= getMaxWin()); // 5000 is the jackpot payout (max win on a roll)
 
 		// if each bet is relatively small, we do not need to worry about miner cheating
 		// we can resolve the bet in house with block.blockhash

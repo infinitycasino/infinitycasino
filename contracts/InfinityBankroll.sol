@@ -7,13 +7,14 @@ contract InfinityCasinoGameInterface {
 	uint256 public LIABILITIES;
 	function payDevelopersFund(address developer) public;
 	function receivePaymentForOraclize() payable public;
+	function getMaxWin() public view;
 }
 
 contract InfinityCasinoBankrollInterface {
-	uint256 public BANKROLL;
 	function payEtherToWinner(uint256 amtEther, address winner) public;
 	function receiveEtherFromGameAddress() payable public;
 	function payOraclize(uint256 amountToPay) public;
+	function getBankroll() public view;
 }
 
 contract ERC20 {
@@ -34,7 +35,6 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 	// constants for InfinityBankroll
 
 	address public OWNER;
-	uint256 public BANKROLL;
 	uint256 public MAXIMUMINVESTMENTSALLOWED;
 	uint256 public WAITTIMEUNTILWITHDRAWORTRANSFER;
 	uint256 public DEVELOPERSFUND;
@@ -78,8 +78,6 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 
 		OWNER = msg.sender;
 
-		// update bankroll 
-		BANKROLL = msg.value;
 		// 100 tokens/ether is the inital seed amount, so:
 		uint256 initialTokens = msg.value * 100;
 		balances[msg.sender] = initialTokens;
@@ -107,24 +105,24 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 		return contributionTime[bankrollerAddress];
 	}
 
+	function getBankroll() view public returns(uint256){
+		// returns the total balance minus the developers fund, as the amount of active bankroll
+		return SafeMath.sub(this.balance, DEVELOPERSFUND);
+	}
+
 	///////////////////////////////////////////////
 	// BANKROLL CONTRACT <-> GAME CONTRACTS functions
 	/////////////////////////////////////////////// 
 
 	function payEtherToWinner(uint256 amtEther, address winner) public addressInTrustedAddresses(msg.sender){
 		// this function will get called by a game contract when someone wins a game
-
-		// subtract the amount from BANKROLL
-		BANKROLL = SafeMath.sub(BANKROLL, amtEther);
-
-		// and transfer to a player
 		// note, a failed transfer to a player will propagate the OP_REVERT.
+
 		winner.transfer(amtEther);
 	}
 
 	function receiveEtherFromGameAddress() payable public addressInTrustedAddresses(msg.sender) {
 		// this function will get called from the game contracts when someone starts a game.
-		BANKROLL = SafeMath.add(BANKROLL, msg.value);
 	}
 
 	function payOraclize(uint256 amountToPay) public addressInTrustedAddresses(msg.sender) {
@@ -144,7 +142,8 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 	function () public payable {
 
 		// save in memory for cheap access.
-		uint256 currentTotalBankroll = BANKROLL;
+		// this represents the total bankroll balance before the function was called.
+		uint256 currentTotalBankroll = getBankroll() - msg.value;
 
 		require(currentTotalBankroll < MAXIMUMINVESTMENTSALLOWED && msg.value != 0);
 
@@ -171,7 +170,6 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 
 		// now update the total supply of tokens and bankroll amount
 		totalSupply = SafeMath.add(currentSupplyOfTokens, creditedTokens);
-		BANKROLL = SafeMath.add(currentTotalBankroll, contributedEther);
 
 		// now credit the user with his amount of contributed tokens 
 		balances[msg.sender] = SafeMath.add(balances[msg.sender], creditedTokens);
@@ -208,8 +206,8 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 			&& _amountTokens > 0);
 
 		// save in memory for cheap access.
-		
-		uint256 currentTotalBankroll = BANKROLL;
+		// again, represents the total balance of the contract before the function was called.
+		uint256 currentTotalBankroll = getBankroll();
 		uint256 currentSupplyOfTokens = totalSupply;
 
 		// calculate the token withdraw ratio based on current supply 
@@ -224,9 +222,6 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 
 		// and update the users supply of tokens 
 		balances[msg.sender] = SafeMath.sub(tokenBalance, _amountTokens);
-
-		// update the bankroll based on the withdrawn amount.
-		BANKROLL = SafeMath.sub(currentTotalBankroll, withdrawEther);
 
 		// update the developers fund based on this calculated amount 
 		DEVELOPERSFUND = SafeMath.add(DEVELOPERSFUND, developersCut);

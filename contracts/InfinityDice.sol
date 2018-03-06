@@ -100,7 +100,7 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 	////////////////////////////////////
 
 	function getMaxWin() public view returns(uint256){
-		return (MAXWIN_inTHOUSANDTHPERCENTS * InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL()) / 1000;
+		return (SafeMath.mul(InfinityCasinoBankrollInterface(BANKROLLER).getBankroll(), MAXWIN_inTHOUSANDTHPERCENTS) / 1000);
 	}
 
 	////////////////////////////////////
@@ -218,7 +218,7 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 				&& rollUnder > 1
 				&& rollUnder < 100
 				// make sure that the player cannot win more than the max win (forget about house edge here)
-				&& (SafeMath.mul(betPerRoll, 100) / (rollUnder - 1)) <= (SafeMath.mul(InfinityCasinoBankrollInterface(BANKROLLER).BANKROLL(), MAXWIN_inTHOUSANDTHPERCENTS) / 1000));
+				&& (SafeMath.mul(betPerRoll, 100) / (rollUnder - 1)) <= getMaxWin());
 
 		// if bets are relatively small, resolve the bet in-house
 		if (betPerRoll < MINBET_forORACLIZE) {
