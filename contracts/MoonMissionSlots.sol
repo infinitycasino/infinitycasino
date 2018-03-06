@@ -413,44 +413,44 @@ contract MoonMissionSlots is usingOraclize, InfinityCasinoGameInterface {
 
 			if (credits <= 28){
 				// force the bankroll to pay for the Oraclize transaction
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 350000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 350000));
 
 				// send a new query to oraclize
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 350000);
 			}
 			else if (credits <= 56){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 400000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 400000));
 
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 400000);
 			}
 			else if (credits <= 84){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 450000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 450000));
 
 			    oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 450000);
 			}
 			else if (credits <= 112){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 500000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 500000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 500000);
 			}
 			else if (credits <= 140){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 550000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 550000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 550000);
 			}
 			else if (credits <= 168){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 600000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 600000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 600000);
 			}
 			else if (credits <= 196){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 650000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 650000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 650000);
 			}
 			else {
 				// credits <= 224
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 700000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 700000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 700000);
 			}

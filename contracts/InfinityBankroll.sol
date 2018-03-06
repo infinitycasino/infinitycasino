@@ -7,14 +7,14 @@ contract InfinityCasinoGameInterface {
 	uint256 public LIABILITIES;
 	function payDevelopersFund(address developer) public;
 	function receivePaymentForOraclize() payable public;
-	function getMaxWin() public view;
+	function getMaxWin() public view returns(uint256);
 }
 
 contract InfinityCasinoBankrollInterface {
 	function payEtherToWinner(uint256 amtEther, address winner) public;
 	function receiveEtherFromGameAddress() payable public;
 	function payOraclize(uint256 amountToPay) public;
-	function getBankroll() public view;
+	function getBankroll() public view returns(uint256);
 }
 
 contract ERC20 {

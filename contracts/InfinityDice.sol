@@ -311,22 +311,22 @@ contract InfinityDice is usingOraclize, InfinityCasinoGameInterface {
 
 			if (rolls <= 256){
 				// force the bankroll to pay for the Oraclize transaction
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 375000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 375000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 375000);
 			}
 			else if (rolls <= 512){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 575000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 575000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 575000);
 			}
 			else if (rolls <= 768){
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 775000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 775000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 775000);
 			}
 			else {
-				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(ORACLIZEGASPRICE * 1000000);
+				InfinityCasinoBankrollInterface(BANKROLLER).payOraclize(oraclize_getPrice('random', 1000000));
 
 				oraclizeQueryId = oraclize_newRandomDSQuery(0, 30, 1000000);
 			}
