@@ -1,28 +1,3 @@
-// Thanks to @xavierlepretre for providing the basis of this function
-// https://gist.github.com/xavierlepretre/88682e871f4ad07be4534ae560692ee6
-
-// This allows you to poll for a transaction receipt being mined, and allows you to 
-// circumvent the faulty metamask event watchers.
-// In standard web3.js, a getTransactionReceipt returns null if the tx has not been
-// mined yet. This will only return the actual receipt after the tx has been mined.
-
-function getTransactionReceiptMined(txHash) {
-    const self = this;
-    const transactionReceiptAsync = function(resolve, reject) {
-        web3.eth.getTransactionReceipt(txHash, (error, receipt) => {
-            if (error) {
-                reject(error);
-            } else if (receipt == null) {
-                setTimeout(
-                    () => transactionReceiptAsync(resolve, reject), 500);
-            } else {
-                resolve(receipt);
-            }
-        });
-    }
-    return new Promise(transactionReceiptAsync);
-};
-
 function hexToBinary(hexString){
     var hexAlphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
     var binaryAlphabet = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111'];
@@ -99,7 +74,7 @@ InfinityDice = {
             var diceAbi = data;
             
             InfinityDice.Dice = web3.eth.contract(diceAbi);
-            InfinityDice.diceInstance = InfinityDice.Dice.at('0xec8e1042C9eC9386c75F79368697cd51c5731469');
+            InfinityDice.diceInstance = InfinityDice.Dice.at('0x1F4Be98646BF9f4904eE32d36B37d76eF92C58b4');
 
             return InfinityDice.getContractDetails(web3);
 
@@ -130,14 +105,13 @@ InfinityDice = {
             else {
                 var maxWin = result;
 
-                InfinityDice.diceInstance.BANKROLL.call(function(error, result){
+                InfinityDice.diceInstance.getMaxWin(function(error, result){
                     if (error){
                         console.log('could not get bankroll!');
                     }
                     else {
-                        var max = new BigNumber(result.times(maxWin).dividedBy(1000).toFixed(0));
-                        $('#max-win').html(web3.fromWei(max, "ether").toString().slice(0,7));
-                        InfinityDice.maxWinPerSpin = max;
+                        $('#max-win').html(web3.fromWei(result, "ether").toString().slice(0,7));
+                        InfinityDice.maxWinPerSpin = result;
                     }
                 });
             }
