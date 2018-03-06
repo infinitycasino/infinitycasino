@@ -97,7 +97,7 @@ InfinityBankroll = {
             var bankrollAbi = data;
             // rinkeby: 0x6ce0f38DB787434f2ED0C7DE8C61be2FAAe87f32
             InfinityBankroll.Bankroll = web3.eth.contract(bankrollAbi);
-            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0xB3E74ceE8879d0E8eB421eCC39fDb428b4Ab8910');
+            InfinityBankroll.bankrollInstance = InfinityBankroll.Bankroll.at('0xD93ae87409D6CCceB2612dA9c2a832829F6A17A4');
 
             return InfinityBankroll.getUserDetails(web3);
 
@@ -105,8 +105,9 @@ InfinityBankroll = {
     },
 
     bindInitialEvents: function(){
-        $('#withdraw').click(function() {InfinityBankroll.withdraw(); });
+        $('#withdraw').click(function() {InfinityBankroll.withdraw(false); });
         $('#deposit').click(function() {InfinityBankroll.deposit(); });
+        $('#withdraw-all').click(function(){InfinityBankroll.withdraw(true); });
     },
 
     getUserDetails: function(web3){
@@ -121,14 +122,14 @@ InfinityBankroll = {
     getContractDetails: async function(web3){
         // first get the withdrawl details
         try {
-            InfinityBankroll.currentTotalBankrollBalance = await getStaticValueFromBankroll(InfinityBankroll.bankrollInstance.getCurrentBalances);
+            InfinityBankroll.currentTotalBankrollBalance = await getStaticValueFromBankroll(InfinityBankroll.bankrollInstance.getBankroll);
             InfinityBankroll.currentTotalTokenSupply = await getStaticValueFromBankroll(InfinityBankroll.bankrollInstance.totalSupply);
             InfinityBankroll.currentUserTokenSupply = await getStaticMappingFromBankroll(InfinityBankroll.bankrollInstance.balanceOf, web3.eth.accounts[0]);
             // calculate value of tokens given these values
             InfinityBankroll.currentUserTokenValue = InfinityBankroll.currentTotalBankrollBalance.times(InfinityBankroll.currentUserTokenSupply).dividedBy(InfinityBankroll.currentTotalTokenSupply);
 
             $('#current-tokens').text(web3.fromWei(InfinityBankroll.currentUserTokenSupply, "ether"));
-            $('#current-tokens-value').text(web3.fromWei(InfinityBankroll.currentUserTokenValue, "ether"));
+            $('#current-tokens-value').text(isNaN(InfinityBankroll.currentUserTokenValue) ? 0 : web3.fromWei(InfinityBankroll.currentUserTokenValue, "ether"));
 
             if (InfinityBankroll.currentUserTokenSupply.greaterThan(0)){
                 var mandatoryWaitTime = parseInt(await getStaticValueFromBankroll(InfinityBankroll.bankrollInstance.WAITTIMEUNTILWITHDRAWORTRANSFER), 10);
@@ -137,25 +138,7 @@ InfinityBankroll = {
                 var thisTime = Math.floor(Date.now() / 1000);
 
                 // if the user can withdraw their tokens, then get details about the withdraw
-                if (usersContributionTime + mandatoryWaitTime <= thisTime){
-                    InfinityBankroll.currentContractBankrollBalance = await getStaticValueFromBankroll(InfinityBankroll.bankrollInstance.BANKROLL);
-                
-                    // get the amount of tokens this user can withdraw
-                    if (InfinityBankroll.currentContractBankrollBalance.lessThan(InfinityBankroll.currentUserTokenValue)){
-                        InfinityBankroll.maxWithdrawTokens = InfinityBankroll.currentTotalTokenSupply.dividedBy(InfinityBankroll.currentTotalBankrollBalance).times(InfinityBankroll.currentContractBankrollBalance);
-                    }
-                    else {
-                        InfinityBankroll.maxWithdrawTokens = InfinityBankroll.currentUserTokenSupply;
-                    }
-                    // display this withdrawal info
-                    if (InfinityBankroll.maxWithdrawTokens.greaterThan(100000)){
-                        $('#withdraw-info').show();
-                        $('#withdraw-info').html('MAX: ' + web3.fromWei(InfinityBankroll.maxWithdrawTokens, "ether") + ' tokens.');
-                    }
-                }
-
-                // else, just display the time until they are allowed to withdraw their tokens
-                else {
+                if (usersContributionTime + mandatoryWaitTime >= thisTime){
                     var remainingWaitTime = mandatoryWaitTime - (thisTime - usersContributionTime);
 
                     var inWeeks = Math.floor(remainingWaitTime / 604800);
@@ -176,7 +159,7 @@ InfinityBankroll = {
                         $('#withdraw-info').append(inHours.toString() + ' hours and ');
                     }
                     $('#withdraw-info').append(inMinutes.toString() + ' minutes until you may cash in your tokens for ether, or transfer your tokens to a different account.');
-                }
+                }   
             }
 
             // now get the deposit details
@@ -232,45 +215,56 @@ InfinityBankroll = {
         });
     },
 
-    withdraw: function(){
-        var withdrawAmt = $('#withdraw-amt').val();
-
-        InfinityBankroll.bankrollInstance.cashoutINFSTokens(web3.toWei(withdrawAmt, "ether"), {from: web3.eth.accounts[0]}, async function(error, result){
-            if (error){
-                console.log('error while withdrawing INFS tokens', error);
-            }
-            else {
-                $('#withdraw-info').html('Waiting for withdrawal to be processed... one moment please');
-
-                var txHash = result;
-                var txReceipt = await getTransactionReceiptMined(txHash);
-
-                if (txReceipt.logs.length === 0){
-                    $('#withdraw-info').html('Uh oh, your withdrawal seemed to fail! Please check your account on etherscan for more info...');
+    withdraw: function(all){
+        if (all === true){
+            // withdraw all tokens, use smart contract function cashoutINFSTokens_ALL
+            InfinityBankroll.bankrollInstance.cashoutINFSTokens_ALL({from: web3.eth.accounts[0]}, async function(error, result){
+                if (error){
+                    console.log('error while withdrawing all INFS tokens', error);
                 }
-                else if (txReceipt.logs.length === 1){
-
-                     var data = txReceipt.logs[0]['data'];
-
-                    var amountEther = parseInt(data.slice(66, 130), 16).toString();
-                    var amountTokens = parseInt(data.slice(130, 194), 16).toString();
-
-                    $('#withdraw-info').html('You successfully cashed in ' + web3.fromWei(amountTokens, "ether") + 'INFS tokens and have been sent ' + web3.fromWei(amountEther, "ether") + 'ether. Thank you for contributing to our bankroll!');
+                else {
+                    await InfinityBankroll.parseWithdrawLogs(result);
                 }
-            }
-        });
+            });
+        }
+        else {
+            // only withdraw some tokens
+            var withdrawAmt = $('#withdraw-amt').val();
+
+            InfinityBankroll.bankrollInstance.cashoutINFSTokens(web3.toWei(withdrawAmt, "ether"), {from: web3.eth.accounts[0]}, async function(error, result){
+                if (error){
+                    console.log('error while withdrawing INFS tokens', error);
+                }
+                else {
+                    await InfinityBankroll.parseWithdrawLogs(result);
+                }
+            });
+        }
     },
+
+    parseWithdrawLogs: async function(txHash){
+        $('#withdraw-info').show();
+        $('#withdraw-info').html('Waiting for withdrawal to be processed... one moment please');
+
+        var txReceipt = await getTransactionReceiptMined(txHash);
+
+        if (txReceipt.logs.length === 0){
+            $('#withdraw-info').html('Uh oh, your withdrawal seemed to fail! Please check your account on etherscan for more info...');
+        }
+        else {
+
+             var data = txReceipt.logs[0]['data'];
+
+            var amountEther = parseInt(data.slice(66, 130), 16).toString();
+            var amountTokens = parseInt(data.slice(130, 194), 16).toString();
+
+            $('#withdraw-info').html('You successfully cashed in ' + web3.fromWei(amountTokens, "ether") + ' INFS tokens and have been sent ' + web3.fromWei(amountEther, "ether") + ' ether. Thank you for contributing to our bankroll!');
+        }
+    }
+    
 }
 
 $(document).ready(function(){
-    initUI();
     InfinityBankroll.init();
 });
-
-function initUI(){
-    $('#all-tokens').click(function(){
-        console.log(InfinityBankroll.maxWithdrawTokens);
-        $('#withdraw-amt').val(web3.fromWei(InfinityBankroll.maxWithdrawTokens, "ether"));
-    });
-}
 
