@@ -165,9 +165,20 @@ contract InfinityBankroll is ERC20, InfinityCasinoBankrollInterface {
 			contributedEther = msg.value;
 		}
 
-		// determine the ratio of contribution versus total BANKROLL.
-		uint256 creditedTokens = SafeMath.mul(contributedEther, currentSupplyOfTokens) / currentTotalBankroll;
-
+        uint256 creditedTokens;
+        
+		if (currentSupplyOfTokens != 0){
+			// determine the ratio of contribution versus total BANKROLL.
+			creditedTokens = SafeMath.mul(contributedEther, currentSupplyOfTokens) / currentTotalBankroll;
+		}
+		else {
+			// edge case where ALL money was cashed out from bankroll
+			// so currentSupplyOfTokens == 0
+			// currentTotalBankroll can == 0 or not, if someone mines/sefldestruct's to the contract
+			// but either way, give all the bankroll to person who deposits ether
+			creditedTokens = SafeMath.mul(contributedEther, 100);
+		}
+		
 		// now update the total supply of tokens and bankroll amount
 		totalSupply = SafeMath.add(currentSupplyOfTokens, creditedTokens);
 
