@@ -1,28 +1,3 @@
-// Thanks to @xavierlepretre for providing the basis of this function
-// https://gist.github.com/xavierlepretre/88682e871f4ad07be4534ae560692ee6
-
-// This allows you to poll for a transaction receipt being mined, and allows you to 
-// circumvent the faulty metamask event watchers.
-// In standard web3.js, a getTransactionReceipt returns null if the tx has not been
-// mined yet. This will only return the actual receipt after the tx has been mined.
-
-function getTransactionReceiptMined(txHash) {
-    const self = this;
-    const transactionReceiptAsync = function(resolve, reject) {
-        web3.eth.getTransactionReceipt(txHash, (error, receipt) => {
-            if (error) {
-                reject(error);
-            } else if (receipt == null) {
-                setTimeout(
-                    () => transactionReceiptAsync(resolve, reject), 500);
-            } else {
-                resolve(receipt);
-            }
-        });
-    }
-    return new Promise(transactionReceiptAsync);
-};
-
 function hexToOctal(hexString){
     var hexAlphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
     var hexToBinaryDecoder = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111'];
@@ -121,7 +96,7 @@ MoonMissionSlots = {
             var slotsAbi = data;
 
             MoonMissionSlots.Slots = web3.eth.contract(slotsAbi);
-            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x2411d2263811E5b216a7Cc747eAbc6DB00B8F207');
+            MoonMissionSlots.slotsInstance = MoonMissionSlots.Slots.at('0x0aCB9eA3e26387EccD4DCb5397AF148b7Bb3EEBc');
 
             return MoonMissionSlots.getContractDetails(web3);
 
@@ -155,24 +130,14 @@ MoonMissionSlots = {
                 MoonMissionSlots.minBet = result;
             }
         });
-        var maxBet = MoonMissionSlots.slotsInstance.MAXWIN_inTHOUSANDTHPERCENTS.call(function(error, result){
+        var maxBet = MoonMissionSlots.slotsInstance.getMaxWin(function(error, result){
             if (error){
                 console.log('could not get bet limit');
             }
-            else {
-                var maxWin = parseFloat(String(result));
-                
-                MoonMissionSlots.slotsInstance.BANKROLL.call(function(error, result){
-                    if (error){
-                        console.log('could not get bankroll!');
-                    }
-                    else {
-                        // result = new BigNumber(result.toString());
-                        var max = result.times(maxWin).dividedBy(1000).dividedBy(5000).toFixed(0);                        
-                        $('#max-bet').html(web3.fromWei(max, "ether").toString().slice(0,7));
-                        MoonMissionSlots.maxBet = new BigNumber(max);
-                    }
-                });
+            else {   
+                var max = result.dividedBy(5000).toFixed(0);                        
+                $('#max-bet').html(web3.fromWei(max, "ether").toString().slice(0,7));
+                MoonMissionSlots.maxBet = new BigNumber(max);
             }
         });
         var gamePaused = MoonMissionSlots.slotsInstance.GAMEPAUSED.call(function(error, result){
@@ -533,14 +498,13 @@ function initUI(){
 
     //number spins slider
     $('#number-spins').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 0,
         max: spinCountValues.length - 1,
         value: 9,
-        create: function(){
-            $('#number-spins-slider-handle').text(spinCountValues[$(this).slider("value")]);
-        },
         slide: function(event, ui){
-            $('#number-spins-slider-handle').text(spinCountValues[ui.value].toString());
+            $("#current-number-spins").text(spinCountValues[ui.value]);
         }
     });
 

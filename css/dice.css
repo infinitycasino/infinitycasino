@@ -1,85 +1,74 @@
-.dice-splash-screen {
-	background-color: #333333;
-	padding-top: 1em;
-	z-index: 1;
-}
-.dice-text-title{
-	font-size: 400%;
-	color: #FFFFFF;
-}
-.stats {
-  font-size: 150%;
-  color: #FFFFFF;
-}
-.stats-text{
-  	color: #FFFFFF;
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Monoton');
+
+#splash-screen{
+  background-color: #333333;
 }
 .dice-screen{
-	background-color: #000000;
-	height: 90vh;
+  background-image: url('/img/dice-background.png');
 }
-.place-bets, .roll-bets{
-	color: white;
-	/*border: 2px #999999;
-	border-radius: 50px !important;*/
-}
-
-.roll-bets{
-	text-align: center; 
-	/*display: none; */
+#place-bets, #roll-bets{
+  background-image: url('/img/dice-buy-rolls-frame.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+	
+  color: white;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 50px;
+  padding-bottom: 70px;
 }
 
 .lucky-number{
-	font-size: 777%;
-	text-align: center;
-	color: #F8D800;
+  font-size: 777%;
+  text-shadow: 0 0 20px white, 0 0 40px rgb(66, 226, 244);
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: 700;
 }
 
 .lucky-number:after {
-	content: '';
-	display: block;
-	margin-left: 35%;
-	/*position: absolute;*/
-	text-align: center;
-	/*bottom: 0;
-	left: 0;*/
-	width: 30%;
-	height: 5px;
-	background-color: #0397FF;
+  content: '';
+  display: block;
+  margin-left: 35%;
+  /*position: absolute;*/
+  text-align: center;
+  /*bottom: 0;
+  left: 0;*/
+  width: 30%;
+  height: 0.01em;
+  box-shadow: 0 0 20px rgb(66, 226, 244);
+  background-color: rgba(66, 226, 244, 0.5);
 }
 
 .your-number {
   font-size: 777%;
+  text-shadow: 0 0 20px white, 0 0 40px rgb(66, 226, 244);
   text-align: center;
-  color: #42c2f4;
+  color: #FFFFFF;
+  font-weight: 200;
 }
 
-#roll-under-slider-handle {
-  width: 2em;
-  height: 1.6em;
-  top: 50%;
-  background-color: #42c2f4;
-  margin-top: -.8em;
-  text-align: center;
-  line-height: 1.6em;
+/*dice in-game roll statistics*/
+@media (min-width: 0px){
+  .bet-size{
+    text-align: left;
+  }
+  .current-profit{
+    text-align: left;
+  }
+  .max-rolls{
+    text-align: left;
+  }
 }
-
-#number-rolls-slider-handle {
-  width: 2.5em;
-  height: 1.6em;
-  top: 50%;
-  background-color: #42c2f4;
-  margin-top: -.8em;
-  text-align: center;
-  line-height: 1.6em;
-}
-
-#guaranteed-rolls-slider-handle {
-  width: 2.5em;
-  height: 1.6em;
-  top: 50%;
-  background-color: #42c2f4;
-  margin-top: -.8em;
-  text-align: center;
-  line-height: 1.6em;
+@media (min-width: 992px){
+  .bet-size{
+    text-align: left;
+  }
+  .current-profit{
+    text-align: center;
+  }
+  .max-rolls{
+    text-align: right;
+  }
 }

@@ -1,28 +1,3 @@
-// Thanks to @xavierlepretre for providing the basis of this function
-// https://gist.github.com/xavierlepretre/88682e871f4ad07be4534ae560692ee6
-
-// This allows you to poll for a transaction receipt being mined, and allows you to 
-// circumvent the faulty metamask event watchers.
-// In standard web3.js, a getTransactionReceipt returns null if the tx has not been
-// mined yet. This will only return the actual receipt after the tx has been mined.
-
-function getTransactionReceiptMined(txHash) {
-    const self = this;
-    const transactionReceiptAsync = function(resolve, reject) {
-        web3.eth.getTransactionReceipt(txHash, (error, receipt) => {
-            if (error) {
-                reject(error);
-            } else if (receipt == null) {
-                setTimeout(
-                    () => transactionReceiptAsync(resolve, reject), 500);
-            } else {
-                resolve(receipt);
-            }
-        });
-    }
-    return new Promise(transactionReceiptAsync);
-};
-
 function hexToBinary(hexString){
     var hexAlphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
     var binaryAlphabet = ['0000', '0001', '0010', '0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100', '1101', '1110', '1111'];
@@ -99,7 +74,7 @@ InfinityDice = {
             var diceAbi = data;
             
             InfinityDice.Dice = web3.eth.contract(diceAbi);
-            InfinityDice.diceInstance = InfinityDice.Dice.at('0xec8e1042C9eC9386c75F79368697cd51c5731469');
+            InfinityDice.diceInstance = InfinityDice.Dice.at('0x1F4Be98646BF9f4904eE32d36B37d76eF92C58b4');
 
             return InfinityDice.getContractDetails(web3);
 
@@ -130,14 +105,13 @@ InfinityDice = {
             else {
                 var maxWin = result;
 
-                InfinityDice.diceInstance.BANKROLL.call(function(error, result){
+                InfinityDice.diceInstance.getMaxWin(function(error, result){
                     if (error){
                         console.log('could not get bankroll!');
                     }
                     else {
-                        var max = new BigNumber(result.times(maxWin).dividedBy(1000).toFixed(0));
-                        $('#max-win').html(web3.fromWei(max, "ether").toString().slice(0,7));
-                        InfinityDice.maxWinPerSpin = max;
+                        $('#max-win').html(web3.fromWei(result, "ether").toString().slice(0,7));
+                        InfinityDice.maxWinPerSpin = result;
                     }
                 });
             }
@@ -348,14 +322,16 @@ function initUI(){
     
     //number rolls slider
     $('#number-rolls').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 0,
         max: rollCountValues.length - 1,
         value: 9,
         create: function(){
-            $('#number-rolls-slider-handle').text(rollCountValues[$(this).slider("value")]);
+            $('#current-number-rolls').text(rollCountValues[$(this).slider("value")]);
         },
         slide: function(event, ui){
-            $('#number-rolls-slider-handle').text(rollCountValues[ui.value].toString());
+            $('#current-number-rolls').text(rollCountValues[ui.value].toString());
             updateGuaranteedRollsSlider_withUIInput(ui);
         }
     });
@@ -408,14 +384,16 @@ function initUI(){
 
     // roll under slider
     $('#roll-under').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 2,
         max: 99,
         value: 50,
         create: function(){
-            $('#roll-under-slider-handle').text($(this).slider("value"));
+            $('#current-roll-under').text($(this).slider("value"));
         },
         slide: function(event, ui){
-            $('#roll-under-slider-handle').text(ui.value);
+            $('#current-roll-under').text(ui.value);
 
             var maxBet = InfinityDice.calculateMaxBet(parseFloat(ui.value));
 
@@ -429,14 +407,16 @@ function initUI(){
     });
 
     $('#guaranteed-rolls').slider({
+        orientation: "horizontal",
+        range: "min",
         min: 1,
         max: 10,
         value: 10,
         create: function(){
-            $('#guaranteed-rolls-slider-handle').text($(this).slider("value"));
+            $('#current-guaranteed-rolls').text($(this).slider("value"));
         },
         slide: function(event, ui){
-            $('#guaranteed-rolls-slider-handle').text(ui.value);
+            $('#current-guaranteed-rolls').text(ui.value);
         },
     })
 
@@ -461,7 +441,7 @@ function numberRollsValue(){
 
 function insertProfitPerRoll(rollUnderValue){
     var profit = InfinityDice.calculateProfit( parseFloat($('#bet-per-roll').val()), rollUnderValue );
-    $('#your-profit-per-roll').html(profit.toString().slice(0,4) + 'x');
+    $('#current-profit-per-roll').html(profit.toString().slice(0,4) + 'x');
 }
 
 function updateGuaranteedRollsSlider_withUIInput(ui){
@@ -499,7 +479,7 @@ function updateGuaranteedRollsSlider(numberRolls){
             }
         }
 
-        $('#guaranteed-rolls-slider-handle').text($('#guaranteed-rolls').slider('option', 'value'));
+        $('#current-guaranteed-rolls').text($('#guaranteed-rolls').slider('option', 'value'));
     }
 }
 
@@ -550,14 +530,14 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
                 thisRoll = Math.floor(Math.random() * (100 - rollUnder) + (rollUnder + 1));
 
                 $('#your-number').text(thisRoll);
-                cssColor = {'color' : 'red'}
+                cssColor = {'color' : '#ff1919'}
             }
 
             else {
                 thisRoll = Math.floor(Math.random() * (rollUnder - 1) + 1);
                 
                 $('#your-number').text(thisRoll);
-                cssColor = {'color' : 'green'};
+                cssColor = {'color' : '#09d602'};
             }
             // update ticker and re-enable button
             setTimeout( () => {
@@ -582,19 +562,13 @@ async function rollingDice(win, rollUnder, winSize, onRoll, totalRolls, betPerRo
 // purely a helper function for rolling dice to increment the ticker values.
 function updateTicker(onRoll, totalRolls, currentProfit, cssColor){
     // increment the roll number color: white -> cssColor -> white
-    $('#max-rolls').css(cssColor);
+    $('.in-game-stats').css(cssColor);
+
     $('#max-rolls').text(onRoll.toString() + '/' + totalRolls.toString());
-
-    setTimeout( () => {
-        $('#max-rolls').css({'color' : 'white'});
-    }, 500);
-
-    // change total profit, color white -> cssColor -> white
-    $('#current-profit').css(cssColor);
     $('#current-profit').text(web3.fromWei(currentProfit, "ether").slice(0,8));
 
     setTimeout( () => {
-        $('#current-profit').css({'color' : 'white'});
+        $('.in-game-stats').css({'color' : 'white'});
     }, 500);
 }
 

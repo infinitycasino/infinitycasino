@@ -1,36 +1,47 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 @import url('https://fonts.googleapis.com/css?family=Monoton');
 
-.slots-splash-screen {
-	background-color: #333333;
-	padding-top: 1em;
-	z-index: 1;
+.col-centered{
+  float: none;
+  margin: 0 auto;
 }
-.slots-text-title{
-	font-size: 130%;
-	color: #FFFFFF;
-}
-.stats {
-  font-size: 100%;
-  color: #FFFFFF;
-}
-.stats-text{
-  	color: #FFFFFF;
-}
+
 .slots-screen{
 	background-image: url('/img/slots-background.png');
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-	height: 90vh;
 }
+
+/*place bets box css*/
+
+#place-bets{
+  background-image: url('/img/slots-buy-spins-frame.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  color: white;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 40px;
+  padding-bottom: 50px;
+}
+
+/*footer css*/
+
+.footer {
+  /*position: fixed;*/
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  /*height: 40px;*/
+  line-height: 40px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
+
+/*slots machine css*/
+
 .slots-machine{
   align-content: center;
 }
 
-/*SLOTS CSS*/
 .dial {
   border-radius: 10px;
   position: relative;
@@ -52,6 +63,7 @@
   margin-left: -0.9em;
 }
 
+/*media queries deal with the slots machine, buy spins box */
 
 @media (min-width: 0px){
   .dial-container{
@@ -63,6 +75,10 @@
   }
   .dial {
     height: 195px;
+  }
+  .spins-remaining, .total-profit{
+    font-size: 60%;
+    padding-left: 4em;
   }
 }
 @media (min-width: 576px){
@@ -76,6 +92,10 @@
   .dial {
     height: 300px;
   }
+  .spins-remaining, .total-profit{
+    font-size: 60%;
+    padding-left: 5em;
+  }
 }
 @media (min-width: 768px){
   .dial-container{
@@ -87,6 +107,17 @@
   }
   .dial {
     height: 375px;
+  }
+  .spins-remaining{
+    text-align: left;
+    font-size: 65%;
+    padding-left: 5em;
+  }
+
+  .total-profit{
+    text-align: right;
+    font-size: 65%;
+    padding-right: 4em;
   }
 }
 @media (min-width: 992px){
@@ -100,40 +131,38 @@
   .dial {
     height: 525px;
   }
+  .spins-remaining{
+    text-align: left;
+    font-size: 80%;
+    padding-left: 5.5em;
+  }
+  .total-profit{
+    text-align: right; 
+    font-size: 80%;
+    padding-right: 4em;
+  }
 }
 @media (min-width: 1200px){
   .dial-container{
-    margin-top: -400px
+    margin-top: -380px
   }
   .dial-slot {
-    height: 200px;
-    width: 200px;
+    height: 190px;
+    width: 190px;
   }
   .dial {
-    height: 600px;
+    height: 570px;
   }
-}
-
-.spin-wheel-text{
-  font-size: 300%;
-  font-family: 'Monoton', cursive;
-}
-.spin-wheel{
-  background-color: rgb(66, 226, 244);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 0 30px rgba(66, 226, 244, 0.8);
-  width: 80%; 
-  margin-left: 1em;
-}
-.spin-wheel.disabled{
-  box-shadow: 0 0 0;
-}
-
-.spin-text{
-  font-size:20px;
-  letter-spacing: 2.5px;
-  font-family: 'Raleway', sans-serif;
-  margin: auto;
+  .spins-remaining{
+    text-align: left;
+    font-size: 100%;
+    padding-left: 5.5em;
+  }
+  .total-profit{
+    text-align: right; 
+    font-size: 100%;
+    padding-right: 5em;
+  }
 }
 
 .score-pop {
@@ -145,14 +174,4 @@
   color: #00d936;
   font-size: 600%;
   z-index: 10;
-}
-
-#number-spins-slider-handle {
-  width: 2.5em;
-  height: 1.6em;
-  top: 50%;
-  background-color: #42c2f4;
-  margin-top: -.8em;
-  text-align: center;
-  line-height: 1.6em;
 }
